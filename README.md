@@ -1,3 +1,5 @@
+![RemoSphere](designs/logo.jpeg)
+
 # RemoSphere — A Remote Job Board (Backend)
 
 *Remosphere* is a production-ready **Job Board backend** focused on remote and flexible work, built as my ALX ProDev Backend Nexus Project.
@@ -94,7 +96,7 @@ Key rules:
 
 ## Data model — concise table summaries (Postgres / Supabase)
 
-
+![RemoSphere - Entity Relationship Diagram](./database/ERD.png)
 
 See [ERD.md](/ERD.md) for more information
 
