@@ -1,6 +1,6 @@
-![RemoSphere](designs/logo.jpeg)
-
 # RemoSphere — A Remote Job Board (Backend)
+
+![RemoSphere's Logo](./designs/logo.jpeg)
 
 *Remosphere* is a production-ready **Job Board backend** focused on remote and flexible work, built as my ALX ProDev Backend Nexus Project.
 It’s designed to demonstrate professional backend engineering: secure auth & role-based access, efficient database design and full-text search, well-documented REST APIs, tests, containerized deployment, and clear developer docs (public Swagger).
@@ -466,8 +466,6 @@ Include these in your slides & demo video:
 * Credits: Built for ALX ProDev Backend Capstone. Logo & name by project owner. Inspired by job board best practices.
 
 -->
-
----
 
 ## Contact
 
