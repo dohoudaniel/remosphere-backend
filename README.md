@@ -17,7 +17,7 @@ This README is a single, crystal-clear source of truth for developers, mentors, 
 4. [Architecture Overview](#architecture-overview)
 5. [Data Model (Summary)](#data-model-summary)
 6. [API — Quick Reference & Key Flows](#api--quick-reference--key-flows)
-7. [Authentication & Verification Flow](#authentication--verification-flow)
+7. [Authentication & Verification Flow](#authentication-verification-flow)
 8. [Search, Filtering & Pagination](#search-filtering--pagination)
 9. [Seeding Admin Account](#seeding-admin-account)
 10. [Contribution](#contributing)
@@ -233,7 +233,7 @@ See [ERD.md](/ERD.md) for more information
 
 ---
 
-## Authentication - verification flow
+## Authentication Verification Flow
 
 1. **Signup request (email only)**: user posts email → server validates domain (optional ALX rule) → generate short-lived verification token → send email via SendGrid with verification link.
 2. **User clicks verification link**: link contains token → server validates token; on success, redirect to frontend registration or provide token for completing signup.
