@@ -19,16 +19,18 @@ This README is a single, crystal-clear source of truth for developers, mentors, 
 6. [API — Quick Reference & Key Flows](#api---quick-reference--key-flows)
 7. [Authentication & Verification Flow](#authentication--verification-flow)
 8. [Search, Filtering & Pagination](#search-filtering--pagination)
-9. [File storage & Attachments](#file-storage--attachments)
+9. [Seeding Admin Account](#seeding-admin-account)
+10. [Contributing, License & Credits](#contributing-license--credits)
+<!-- 9. [File storage & Attachments](#file-storage--attachments)
 10. [Database details & notes](#database-details--notes)
-11. [Local development (Docker) & setup](#local-development-docker--setup)
-12. [Seeding Admin Account](#seeding-admin-account)
-13. [Testing & CI/CD](#testing--cicd)
+11. [Local development (Docker) & setup](#local-development-docker--setup) -->
+<!-- 9. [Seeding Admin Account](#seeding-admin-account) -->
+<!-- 13. [Testing & CI/CD](#testing--cicd)
 14. [Deployment (production)](#deployment-production)
 15. [Presentation & Demo checklist (Capstone)](#presentation--demo-checklist-capstone)
 16. [Acceptance Criteria / Mentor Checklist](#acceptance-criteria--mentor-checklist)
-17. [Project Roadmap / Stretch Goals](#project-roadmap--stretch-goals)
-18. [Contributing, License & Credits](#contributing-license--credits)
+17. [Project Roadmap / Stretch Goals](#project-roadmap--stretch-goals) -->
+<!-- 10. [Contributing, License & Credits](#contributing-license--credits) -->
 
 ---
 
