@@ -16,11 +16,11 @@ This README is a single, crystal-clear source of truth for developers, mentors, 
 3. [Tech Stack](#tech-stack)
 4. [Architecture Overview](#architecture-overview)
 5. [Data Model (Summary)](#data-model-summary)
-6. [API — Quick Reference & Key Flows](#api---quick-reference--key-flows)
+6. [API — Quick Reference & Key Flows](#api--quick-reference--key-flows)
 7. [Authentication & Verification Flow](#authentication--verification-flow)
 8. [Search, Filtering & Pagination](#search-filtering--pagination)
 9. [Seeding Admin Account](#seeding-admin-account)
-10. [Contributing, License & Credits](#contributing-license--credits)
+10. [Contribution](#contributing)
 <!-- 9. [File storage & Attachments](#file-storage--attachments)
 10. [Database details & notes](#database-details--notes)
 11. [Local development (Docker) & setup](#local-development-docker--setup) -->
@@ -96,8 +96,7 @@ Key rules:
 
 ---
 
-## Data model — concise table summaries (Postgres / Supabase)
-
+## Data model — Summary
 ![RemoSphere - Entity Relationship Diagram](./database/ERD.png)
 
 See [ERD.md](/ERD.md) for more information
@@ -234,7 +233,7 @@ See [ERD.md](/ERD.md) for more information
 
 ---
 
-## Authentication & verification flow (detailed)
+## Authentication - verification flow
 
 1. **Signup request (email only)**: user posts email → server validates domain (optional ALX rule) → generate short-lived verification token → send email via SendGrid with verification link.
 2. **User clicks verification link**: link contains token → server validates token; on success, redirect to frontend registration or provide token for completing signup.
