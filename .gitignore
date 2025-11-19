@@ -7,3 +7,4 @@ venv
 .env.development
 .env.production
 *.sqlite3
+*/*/__pycache__
