@@ -57,6 +57,8 @@ INSTALLED_APPS = [
     'jobs',
     'applications',
     'companies',
+    'rest_framework',
+    'drf_yasg',
 ]
 
 MIDDLEWARE = [
