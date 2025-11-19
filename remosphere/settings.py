@@ -59,6 +59,7 @@ INSTALLED_APPS = [
     'companies',
     'rest_framework',
     'drf_yasg',
+    'rest_framework_simplejwt',
 ]
 
 MIDDLEWARE = [
@@ -157,3 +158,4 @@ REST_FRAMEWORK = {
     ),
 }
 
+AUTH_USER_MODEL = 'users.User'
