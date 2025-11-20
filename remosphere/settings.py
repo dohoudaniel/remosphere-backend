@@ -18,6 +18,43 @@ from datetime import timedelta
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# LOGGING = {
+#    "version": 1,
+#    "disable_existing_loggers": False,
+#
+#    "formatters": {
+#        "standard": {
+#            "format": "[{asctime}] {levelname} {name}: {message}",
+#            "style": "{",
+#        },
+#    },
+
+#    "handlers": {
+#        "file": {
+#            "level": "INFO",
+#            "class": "logging.FileHandler",
+#            "filename": os.path.join(BASE_DIR, "logs", "django.log"),
+#            "formatter": "standard",
+#        },
+#        "console": {
+#            "class": "logging.StreamHandler",
+#        },
+#    },
+#
+#    "loggers": {
+#        "django": {
+#            "handlers": ["file", "console"],
+#            "level": "INFO",
+#            "propagate": True,
+#       },
+#        # Your project logs:
+#        "": {
+#            "handlers": ["file", "console"],
+#            "level": "INFO",
+#        },
+#    },
+#}
+
 # Setting up environment
 env = environ.Env()
 
