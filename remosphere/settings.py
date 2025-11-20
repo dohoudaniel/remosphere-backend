@@ -223,16 +223,31 @@ JWT_COOKIE_HTTPONLY = True
 
 SWAGGER_SETTINGS = {
     "SECURITY_DEFINITIONS": {
-        "Bearer": {
+        "JWTAuth": {
             "type": "apiKey",
+            "in": "header",
             "name": "Authorization",
-            "in": "header"
+            "description": "Format: Bearer <token>"
         },
-        "CookieAuth": {                          # cookie-based in Swagger
-            "type": "apiKey",
-            "in": "cookie",
-            "name": os.getenv("JWT_ACCESS_COOKIE_NAME", "remosphere_access")
-        }
+
+        # "Bearer": {
+        #     "type": "apiKey",
+        #     "name": "Authorization",
+        #     "in": "header"
+        # },
+        # "CookieAuth": {                          # cookie-based in Swagger
+        #     "type": "apiKey",
+        #     "in": "cookie",
+        #     "name": os.getenv("JWT_ACCESS_COOKIE_NAME", "remosphere_access")
+        # }
     },
     "USE_SESSION_AUTH": False,
 }
+
+EMAIL_BACKEND = env("EMAIL_BACKEND")
+EMAIL_HOST = env("EMAIL_HOST")
+EMAIL_PORT = env("EMAIL_PORT")
+EMAIL_USE_TLS = env("EMAIL_USE_TLS")
+EMAIL_HOST_USER = env("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD")
+DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL")
