@@ -19,6 +19,7 @@ from django.urls import path, re_path, include
 from rest_framework import permissions
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
+from rest_framework_simplejwt.views import TokenRefreshView, TokenVerifyView
 
 schema_view = get_schema_view(
     openapi.Info(
@@ -40,7 +41,8 @@ urlpatterns = [
     # ReDoc
     re_path(r'^redoc/$', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
 
-    # ReDoc
+    # Docs
+    re_path(r'^api/docs/$', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
     re_path(r'^docs/$', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
 
     # JSON schema view
@@ -49,6 +51,11 @@ urlpatterns = [
     # The job categories
     path('api/', include('categories.urls')),
 
-    # The User Authentication
-     path("api/auth/", include("authentication.views")),  # JWT token endpoints
+    # The Test Authentication
+     path("api/auth/", include("authentication.urls")),  # JWT token endpoints,
+
+    # User Authentication
+    path("api/users/", include("users.urls")),
+    path("api/token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
+    path("api/token/verify/", TokenVerifyView.as_view(), name="token_verify"),
 ]
