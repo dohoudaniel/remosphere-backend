@@ -80,6 +80,8 @@ DEBUG = env.bool("DEBUG_MODE", default=True)
 
 ALLOWED_HOSTS = env.list("ALLOWED_HOSTS")
 
+SITE_URL = env("SITE_URL")
+
 
 # Application definition
 
@@ -192,6 +194,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "rest_framework_simplejwt.authentication.JWTAuthentication",
+        # fallback to header-only JWT
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
     ),
     "DEFAULT_PERMISSION_CLASSES": (
         "rest_framework.permissions.IsAuthenticated",
@@ -208,4 +212,27 @@ SIMPLE_JWT = {
     "ALGORITHM": "HS256",
     "SIGNING_KEY": SECRET_KEY,
     "AUTH_HEADER_TYPES": ("Bearer",),
+}
+
+# Cookie settings (for cookies created by our login/refresh endpoints)
+JWT_COOKIE_NAME = "remosphere_refresh"        # refresh stored HttpOnly cookie
+JWT_ACCESS_COOKIE_NAME = "remosphere_access"  # access cookie
+JWT_COOKIE_SECURE = env("JWT_COOKIE_SECURE")  # set to True in production (HTTPS)
+JWT_COOKIE_SAMESITE = "Lax"                   # or "Strict"
+JWT_COOKIE_HTTPONLY = True
+
+SWAGGER_SETTINGS = {
+    "SECURITY_DEFINITIONS": {
+        "Bearer": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
+        },
+        "CookieAuth": {                          # cookie-based in Swagger
+            "type": "apiKey",
+            "in": "cookie",
+            "name": os.getenv("JWT_ACCESS_COOKIE_NAME", "remosphere_access")
+        }
+    },
+    "USE_SESSION_AUTH": False,
 }
