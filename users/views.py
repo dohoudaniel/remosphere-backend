@@ -4,6 +4,8 @@ from rest_framework.permissions import AllowAny
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 from .serializers import RegisterSerializer, LoginSerializer, UserSerializer
+from rest_framework.views import APIView
+from authentication.email_utils import send_welcome_email
 
 
 class RegisterView(generics.CreateAPIView):
@@ -17,6 +19,30 @@ class RegisterView(generics.CreateAPIView):
     )
     def post(self, request, *args, **kwargs):
         return super().post(request, *args, **kwargs)
+
+
+class RequestVerificationEmailView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        user = request.user if request.user.is_authenticated else None
+        email = request.data.get("email")
+
+        if user is None and email:
+            user = User.objects.filter(email=email).first()
+
+        if user is None:
+            return Response({"detail": "User not found"}, status=404)
+
+        if user.is_email_verified:
+            return Response(
+                {"detail": "User has already verified email"},
+                status=400
+            )
+
+        send_verification_email(user)
+        return Response({"detail": "Verification email sent"})
+
 
 
 class LoginView(generics.GenericAPIView):
@@ -42,9 +68,13 @@ class LoginView(generics.GenericAPIView):
         }
     )
     def post(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
+        # serializer = self.get_serializer(data=request.data)
+        # serializer.is_valid(raise_exception=True)
+        # user = serializer.context.get("user")
 
+        serializer = LoginSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        # user = serializer.validated_data["user"]
         user = serializer.context.get("user")
 
         return Response(
@@ -56,4 +86,24 @@ class LoginView(generics.GenericAPIView):
             },
             status=status.HTTP_200_OK
         )
+
+
+class VerifyEmailView(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request, token):
+        user = verify_token(token)  # You already have this func
+
+        if user is None:
+            return Response({"detail": "Invalid or expired token"}, status=400)
+
+        if user.is_email_verified:
+            return Response({"detail": "Email already verified"}, status=200)
+
+        user.is_email_verified = True
+        user.save()
+
+        send_welcome_email(user)
+
+        return Response({"detail": "Email verified successfully"}, status=200)
 
