@@ -8,3 +8,4 @@ venv
 .env.production
 *.sqlite3
 */*/__pycache__
+logs
