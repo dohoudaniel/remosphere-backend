@@ -47,8 +47,16 @@ class User(AbstractBaseUser, PermissionsMixin):
     def __str__(self):
         return self.email
 
-
     @property
     def username(self):
         return f"{self.first_name} {self.last_name}"
+
+    def save(self, *args, **kwargs):
+        if self.pk:
+            old = User.objects.get(pk=self.pk)
+            self._previous_is_verified = old.email_verified
+        else:
+            self._previous_is_verified = False
+
+        super().save(*args, **kwargs)
 

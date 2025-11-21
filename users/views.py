@@ -20,6 +20,8 @@ class RegisterView(generics.CreateAPIView):
     def post(self, request, *args, **kwargs):
         return super().post(request, *args, **kwargs)
 
+    # send_welcome_email.delay(user.email, user.first_name)
+
 
 class RequestVerificationEmailView(APIView):
     permission_classes = [AllowAny]
@@ -103,7 +105,14 @@ class VerifyEmailView(APIView):
         user.is_email_verified = True
         user.save()
 
-        send_welcome_email(user)
+        # send_welcome_email(user)
+        try:
+            # send_welcome_email.delay(user.email)
+            return Response({"detail": "Email verified successfully"}, status=200)
 
-        return Response({"detail": "Email verified successfully"}, status=200)
+        except Exception as e:
+            logger.error(f"Error sending confirmation email: {e}")
+            return Response({"message": "Email verified, but confirmation email failed."}, status=status.HTTP_200_OK)
+
+        # return Response({"detail": "Email verified successfully"}, status=200)
 
