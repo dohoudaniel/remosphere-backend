@@ -13,3 +13,8 @@
 - Updated Swagger UI
 - Updated User Authentication
 - Implement User Email Verifying using Google SMTP
+
+
+## 21st Novemeber 2025 (2:56 AM)
+- Successfully implemented the email sending service and background job
+- User verification works
