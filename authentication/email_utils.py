@@ -29,8 +29,8 @@ def send_verification_email(user, request=None):
     domain = request.build_absolute_uri(verify_path) if request else settings.SITE_URL + verify_path
     # ensure token appended
     verify_url = f"{domain}?token={token}"
-    subject = "Verify your email to continue <> RemoSphere 🌎"
-    message = f"Hi {user.first_name},\n\nClick the link to verify your email:\n\n{verify_url}\n\nIf you didn't create an account, ignore this."
+    subject = "RemoSphere 🌍: Verify your email to continue"
+    message = f"Hi {user.first_name},\nWelcome to RemoSphere 🌍, the best job board out there :)\n\nClick the link below to verify your email, and start using RemoSphere:\n\n{verify_url}\n\nIf you didn't create an account, ignore this."
     send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [user.email])
 
 
