@@ -18,3 +18,6 @@
 ## 21st Novemeber 2025 (2:56 AM)
 - Successfully implemented the email sending service and background job
 - User verification works
+
+## 22nd November 2025 (12:27 AM)
+- Implemented the email sending after a user sign up and then they are taken to the verify auth route, and then, the user gets verified, and can then login.
