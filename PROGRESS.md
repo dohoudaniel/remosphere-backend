@@ -21,3 +21,4 @@
 
 ## 22nd November 2025 (12:27 AM)
 - Implemented the email sending after a user sign up and then they are taken to the verify auth route, and then, the user gets verified, and can then login.
+- Add password validators for the project.
