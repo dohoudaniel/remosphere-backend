@@ -3,6 +3,8 @@ from django.contrib.auth import authenticate
 from rest_framework_simplejwt.tokens import RefreshToken
 from .models import User
 from rest_framework.exceptions import AuthenticationFailed
+from django.contrib.auth.password_validation import validate_password
+
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -26,6 +28,7 @@ class UserSerializer(serializers.ModelSerializer):
 
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
+    email = serializers.EmailField()
 
     class Meta:
         model = User
@@ -35,6 +38,14 @@ class RegisterSerializer(serializers.ModelSerializer):
             "last_name",
             "password",
         ]
+
+    def validate_password(self, value):
+        try:
+            validate_password(value)
+        except Exception as e:
+            raise serializers.ValidationError(list(e.messages))
+
+        return value
 
     def create(self, validated_data):
         return User.objects.create_user(
