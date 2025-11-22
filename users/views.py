@@ -5,7 +5,8 @@ from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 from .serializers import RegisterSerializer, LoginSerializer, UserSerializer
 from rest_framework.views import APIView
-from authentication.email_utils import send_welcome_email
+from authentication.email_utils import send_welcome_email, send_verification_email
+from .models import User
 
 
 class RegisterView(generics.CreateAPIView):
@@ -18,9 +19,33 @@ class RegisterView(generics.CreateAPIView):
         responses={201: "User created"}
     )
     def post(self, request, *args, **kwargs):
-        return super().post(request, *args, **kwargs)
+        # Use serializer to create the user
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.save()  # <-- user is now created
 
-    # send_welcome_email.delay(user.email, user.first_name)
+        # Use request to dynamically build the domain
+        domain = request.build_absolute_uri("/").rstrip("/")
+
+        # Queue the verification email using Celery
+        send_verification_email.delay(user.id, domain)
+
+        return Response(
+            {
+                "detail": "User successfully signed up. Please check your email for verification."
+            },
+            status=201
+        )
+        # return super().post(request, *args, **kwargs)
+
+    def create(self, validated_data):
+        try:
+            user = User.objects.create_user(**validated_data)
+            return user
+        except IntegrityError as e:
+            if "unique constraint" in str(e):
+                raise serializers.ValidationError({"email": "A user with this email already exists."})
+            # raise e
 
 
 class RequestVerificationEmailView(APIView):

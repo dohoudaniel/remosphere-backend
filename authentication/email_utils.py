@@ -4,6 +4,10 @@ from django.urls import reverse
 from django.core.mail import send_mail
 from celery import shared_task
 import logging
+from users.models import User
+from django.conf import settings
+
+
 
 signer = TimestampSigner()
 
@@ -22,13 +26,22 @@ def verify_verification_token(token, max_age=60*60*24):  # 1 day
     except BadSignature:
         return None
 
-def send_verification_email(user, request=None):
+
+@shared_task # (bind=True, max_retries=5)
+def send_verification_email(user_id, domain): # (user_id, request=None):
+    try:
+        user = User.objects.get(id=user_id)
+    except User.DoesNotExist:
+        return f"User does not exist."
+
+    # user = User.objects.get(id=user_id)
     token = make_verification_token(user.email)
     verify_path = reverse("email_verify")  # map to the view name below
     # build absolute url (if request provided)
-    domain = request.build_absolute_uri(verify_path) if request else settings.SITE_URL + verify_path
+    # domain = request.build_absolute_uri(verify_path) if request else settings.SITE_URL + verify_path
+    # domain = settings.SITE_URL.rstrip("/")  # ensure no trailing slash
     # ensure token appended
-    verify_url = f"{domain}?token={token}"
+    verify_url = f"{domain.rstrip('/')}{verify_path}?token={token}"
     subject = "RemoSphere 🌍: Verify your email to continue"
     message = f"Hi {user.first_name},\nWelcome to RemoSphere 🌍, the best job board out there :)\n\nClick the link below to verify your email, and start using RemoSphere:\n\n{verify_url}\n\nIf you didn't create an account, ignore this."
     send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [user.email])

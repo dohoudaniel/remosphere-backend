@@ -103,6 +103,7 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt.token_blacklist',
     # 'authentication',
     'authentication.apps.AuthenticationConfig',
+    'anymail',
 ]
 
 MIDDLEWARE = [
@@ -255,5 +256,9 @@ EMAIL_USE_TLS = env("EMAIL_USE_TLS")
 EMAIL_HOST_USER = env("EMAIL_HOST_USER")
 EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD")
 DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL")
+
+ANYMAIL = {
+    "BREVO_API_KEY": env("BREVO_API_KEY"),
+}
 
 CELERY_BROKER_URL = env("CELERY_BROKER_URL")
