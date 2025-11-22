@@ -27,15 +27,16 @@ class UserManager(BaseUserManager):
         # extra_fields.setdefault("username", "")
         return self.create_user(email, first_name, last_name, password, **extra_fields)
 
+
 class User(AbstractBaseUser, PermissionsMixin):
-    email = models.EmailField(unique=True)
+    email = models.EmailField(unique=True, db_index=True)
     # username = models.CharField(max_length=50, unique=True)  # firstname+lastname
     first_name = models.CharField(max_length=25)
     last_name = models.CharField(max_length=25)
     role = models.CharField(max_length=50, default="user")  # 'admin' or 'user'
     is_admin = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
-    email_verified = models.BooleanField(default=False)
+    email_verified = models.BooleanField(default=False, db_index=True)
     date_joined = models.DateTimeField(auto_now_add=True)
     last_login = models.DateTimeField(auto_now=True)
 
