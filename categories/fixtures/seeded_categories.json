@@ -1,0 +1,11 @@
+[
+  { "model": "categories.category", "pk": 1, "fields": { "name": "Engineering" } },
+  { "model": "categories.category", "pk": 2, "fields": { "name": "Product" } },
+  { "model": "categories.category", "pk": 3, "fields": { "name": "Design" } },
+  { "model": "categories.category", "pk": 4, "fields": { "name": "Marketing" } },
+  { "model": "categories.category", "pk": 5, "fields": { "name": "Operations" } },
+  { "model": "categories.category", "pk": 6, "fields": { "name": "Data & Analytics" } },
+  { "model": "categories.category", "pk": 7, "fields": { "name": "Customer Support" } },
+  { "model": "categories.category", "pk": 8, "fields": { "name": "IT & Security" } }
+]
+

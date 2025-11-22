@@ -12,10 +12,48 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 
 from pathlib import Path
 import os, environ
+from datetime import timedelta
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+# LOGGING = {
+#    "version": 1,
+#    "disable_existing_loggers": False,
+#
+#    "formatters": {
+#        "standard": {
+#            "format": "[{asctime}] {levelname} {name}: {message}",
+#            "style": "{",
+#        },
+#    },
+
+#    "handlers": {
+#        "file": {
+#            "level": "INFO",
+#            "class": "logging.FileHandler",
+#            "filename": os.path.join(BASE_DIR, "logs", "django.log"),
+#            "formatter": "standard",
+#        },
+#        "console": {
+#            "class": "logging.StreamHandler",
+#        },
+#    },
+#
+#    "loggers": {
+#        "django": {
+#            "handlers": ["file", "console"],
+#            "level": "INFO",
+#            "propagate": True,
+#       },
+#        # Your project logs:
+#        "": {
+#            "handlers": ["file", "console"],
+#            "level": "INFO",
+#        },
+#    },
+#}
 
 # Setting up environment
 env = environ.Env()
@@ -42,6 +80,8 @@ DEBUG = env.bool("DEBUG_MODE", default=True)
 
 ALLOWED_HOSTS = env.list("ALLOWED_HOSTS")
 
+SITE_URL = env("SITE_URL")
+
 
 # Application definition
 
@@ -59,6 +99,11 @@ INSTALLED_APPS = [
     'companies',
     'rest_framework',
     'drf_yasg',
+    'rest_framework_simplejwt',
+    'rest_framework_simplejwt.token_blacklist',
+    # 'authentication',
+    'authentication.apps.AuthenticationConfig',
+    'anymail',
 ]
 
 MIDDLEWARE = [
@@ -122,6 +167,9 @@ AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
+    {
+        "NAME": "users.validators.StrongPasswordValidator"
+    },
 ]
 
 
@@ -146,3 +194,71 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Authentication
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": (
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
+        # fallback to header-only JWT
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
+    ),
+    "DEFAULT_PERMISSION_CLASSES": (
+        "rest_framework.permissions.IsAuthenticated",
+    ),
+}
+
+AUTH_USER_MODEL = 'users.User'
+
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=60),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
+    "ROTATE_REFRESH_TOKENS": True,
+    "BLACKLIST_AFTER_ROTATION": True,
+    "ALGORITHM": "HS256",
+    "SIGNING_KEY": SECRET_KEY,
+    "AUTH_HEADER_TYPES": ("Bearer",),
+}
+
+# Cookie settings (for cookies created by our login/refresh endpoints)
+JWT_COOKIE_NAME = "remosphere_refresh"        # refresh stored HttpOnly cookie
+JWT_ACCESS_COOKIE_NAME = "remosphere_access"  # access cookie
+JWT_COOKIE_SECURE = env("JWT_COOKIE_SECURE")  # set to True in production (HTTPS)
+JWT_COOKIE_SAMESITE = "Lax"                   # or "Strict"
+JWT_COOKIE_HTTPONLY = True
+
+SWAGGER_SETTINGS = {
+    "SECURITY_DEFINITIONS": {
+        "JWTAuth": {
+            "type": "apiKey",
+            "in": "header",
+            "name": "Authorization",
+            "description": "Format: Bearer <token>"
+        },
+
+        # "Bearer": {
+        #     "type": "apiKey",
+        #     "name": "Authorization",
+        #     "in": "header"
+        # },
+        # "CookieAuth": {                          # cookie-based in Swagger
+        #     "type": "apiKey",
+        #     "in": "cookie",
+        #     "name": os.getenv("JWT_ACCESS_COOKIE_NAME", "remosphere_access")
+        # }
+    },
+    "USE_SESSION_AUTH": False,
+}
+
+EMAIL_BACKEND = env("EMAIL_BACKEND")
+EMAIL_HOST = env("EMAIL_HOST")
+EMAIL_PORT = env("EMAIL_PORT")
+EMAIL_USE_TLS = env("EMAIL_USE_TLS")
+EMAIL_HOST_USER = env("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD")
+DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL")
+
+ANYMAIL = {
+    "BREVO_API_KEY": env("BREVO_API_KEY"),
+}
+
+CELERY_BROKER_URL = env("CELERY_BROKER_URL")
