@@ -4,10 +4,19 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 from drf_yasg.utils import swagger_auto_schema
+from drf_spectacular.utils import extend_schema, OpenApiExample
 from drf_yasg import openapi
 from users.serializers import LoginSerializer, RegisterSerializer, UserSerializer
-from .email_utils import make_verification_token, verify_verification_token, send_verification_email
+from .email_utils import make_verification_token, verify_verification_token, send_verification_email, make_password_reset_token, verify_password_reset_token, send_password_reset_email
 from users.models import User
+from django.core.cache import cache
+from django.contrib.auth import get_user_model
+from django.db import IntegrityError
+from django.utils import timezone
+from .serializers import ForgotPasswordSerializer, ResetPasswordSerializer
+from rest_framework.permissions import AllowAny
+
+User = get_user_model()
 
 
 def set_jwt_cookies(response, access_token, refresh_token):
@@ -188,3 +197,126 @@ class VerifyEmailView(APIView):
         except User.DoesNotExist:
             return Response({"detail": "User not found"}, status=404)
 
+
+def _rate_limit_key_email(email):
+    return f"pwreset:email:{email}"
+
+def _rate_limit_key_ip(ip):
+    return f"pwreset:ip:{ip}"
+
+
+class ForgotPasswordView(APIView):
+    permission_classes = [AllowAny]
+    
+    @swagger_auto_schema(
+    # method="post",
+    operation_description="Request a password reset email.",
+    request_body=ForgotPasswordSerializer,
+    responses={
+        200: openapi.Response("Success", schema=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                "detail": openapi.Schema(type=openapi.TYPE_STRING)
+            }
+        )),
+        429: "Too many requests",
+    },
+    )
+    
+    def post(self, request):
+        serializer = ForgotPasswordSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        email = serializer.validated_data["email"].lower().strip()
+
+        # Rate limiting per email
+        email_key = _rate_limit_key_email(email)
+        email_count = cache.get(email_key, 0)
+        if email_count >= getattr(settings, "PASSWORD_RESET_RATE_LIMIT_PER_HOUR", 5):
+            return Response({"detail": "Too many password reset requests for this email. Try again later."},
+                            status=status.HTTP_429_TOO_MANY_REQUESTS)
+
+        # Rate limiting per IP
+        ip = request.META.get("REMOTE_ADDR", "unknown")
+        ip_key = _rate_limit_key_ip(ip)
+        ip_count = cache.get(ip_key, 0)
+        if ip_count >= getattr(settings, "PASSWORD_RESET_RATE_LIMIT_IP_PER_HOUR", 20):
+            return Response({"detail": "Too many requests from your IP. Try again later."},
+                            status=status.HTTP_429_TOO_MANY_REQUESTS)
+
+        # update counters (expire after 1 hour)
+        cache.set(email_key, email_count + 1, timeout=3600)
+        cache.set(ip_key, ip_count + 1, timeout=3600)
+
+        # Find user (do not reveal whether email exists in response)
+        user = User.objects.filter(email__iexact=email).first()
+        if user:
+            # create token
+            token = make_password_reset_token(user.id)
+
+            # build domain from request (ensure trailing slash for base)
+            base = request.build_absolute_uri("/")  # e.g. http://127.0.0.1:8000/
+            # queue async sending (pass primitives)
+            send_password_reset_email.delay(user.email, token, base.rstrip("/"))  # remove trailing slash for build
+
+        # Always return same generic response for privacy
+        return Response({"detail": "If an account with that email exists, a password reset link has been sent."},
+                        status=status.HTTP_200_OK)
+
+
+class ResetPasswordView(APIView):
+    permission_classes = [AllowAny]
+    
+    @swagger_auto_schema(
+    # method="post",
+    operation_description="Use a valid password reset token to set a new password.",
+    request_body=ResetPasswordSerializer,
+    responses={
+        200: "Password reset successful",
+        400: "Invalid or expired token",
+    },
+    )
+
+    def post(self, request):
+        serializer = ResetPasswordSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        token = serializer.validated_data["token"]
+        new_password = serializer.validated_data["new_password"]
+
+        # verify token
+        result = verify_password_reset_token(token)
+        if isinstance(result, dict) and result.get("error"):
+            err = result["error"]
+            if err == "expired":
+                return Response({"detail": "Reset link expired."}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"detail": "Invalid reset token."}, status=status.HTTP_400_BAD_REQUEST)
+
+        user_id = result.get("user_id")
+        if not user_id:
+            return Response({"detail": "Invalid reset token."}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            user = User.objects.get(pk=user_id)
+        except User.DoesNotExist:
+            return Response({"detail": "User not found."}, status=status.HTTP_404_NOT_FOUND)
+
+        # Set new password (use set_password to hash)
+        user.set_password(new_password)
+        # Optionally update last_login/password_changed timestamp if you have it
+        # user.password_changed_at = timezone.now()
+        user.save(update_fields=["password"])
+
+        # Blacklist outstanding refresh tokens for the user (if token_blacklist app is enabled)
+        try:
+            from rest_framework_simplejwt.token_blacklist.models import OutstandingToken, BlacklistedToken
+            tokens = OutstandingToken.objects.filter(user=user)
+            for t in tokens:
+                # wrap in try because may already be blacklisted
+                try:
+                    BlacklistedToken.objects.get_or_create(token=t)
+                except Exception:
+                    pass
+        except Exception:
+            # token blacklisting not available/configured — ignore
+            pass
+
+        return Response({"detail": "Password has been reset successfully."}, status=status.HTTP_200_OK)
