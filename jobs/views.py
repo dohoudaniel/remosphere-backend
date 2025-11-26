@@ -20,7 +20,7 @@ class JobViewSet(viewsets.ModelViewSet):
         qs = super().get_queryset()
         # non-admins only see active jobs
         user = self.request.user
-        if not (user.is_authenticated and user.is_staff):
+        if not (user.is_authenticated): # and user.is_staff):
             qs = qs.filter(is_active=True)
         return qs
 
