@@ -8,7 +8,8 @@ from rest_framework.views import APIView
 from authentication.email_utils import send_welcome_email, send_verification_email
 from .models import User
 from django.conf import settings
-
+from rest_framework.permissions import IsAuthenticated
+from rest_framework_simplejwt.tokens import RefreshToken
 
 
 class RegisterView(generics.CreateAPIView):
@@ -116,7 +117,7 @@ class LoginView(generics.GenericAPIView):
             },
             status=status.HTTP_200_OK
         )
-        
+
         # 2️⃣ Set HttpOnly Cookies
         response.set_cookie(
             "access_token",
@@ -164,3 +165,34 @@ class VerifyEmailView(APIView):
 
         # return Response({"detail": "Email verified successfully"}, status=200)
 
+
+class LogoutView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        refresh_token = request.COOKIES.get("refresh_token")
+
+        if not refresh_token:
+            response = Response(
+                {"detail": "Logged out."},
+                status=status.HTTP_200_OK
+            )
+            response.delete_cookie("access_token")
+            response.delete_cookie("refresh_token")
+            return response
+
+        try:
+            token = RefreshToken(refresh_token)
+            token.blacklist()   # <-- This is the server invalidation
+        except Exception:
+            pass
+
+        response = Response(
+            {"detail": "Logged out successfully"},
+            status=status.HTTP_200_OK
+        )
+
+        response.delete_cookie("access_token")
+        response.delete_cookie("refresh_token")
+
+        return response
