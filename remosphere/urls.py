@@ -51,6 +51,9 @@ urlpatterns = [
     # The job categories
     path('api/', include('categories.urls')),
 
+    # The job applications
+    path("api/", include("jobs.urls")),
+
     # The Test Authentication
      path("api/auth/", include("authentication.urls")),  # JWT token endpoints,
 

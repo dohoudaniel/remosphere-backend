@@ -10,8 +10,8 @@ class UserManager(BaseUserManager):
         # username = combined.lower()  # auto-generate username
         # username = f"{first_name}{last_name}".lower()  # auto-generate username
         user = self.model(
-            email=email, 
-            first_name=first_name, 
+            email=email,
+            first_name=first_name,
             last_name=last_name,
             # username=username,
             **extra_fields
