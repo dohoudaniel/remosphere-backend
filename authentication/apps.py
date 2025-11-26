@@ -6,4 +6,8 @@ class AuthenticationConfig(AppConfig):
     name = 'authentication'
 
     def ready(self):
+        """
+        Triggering the Authentication signals
+        for the sending of emails (basically)
+        """
         import authentication.signals

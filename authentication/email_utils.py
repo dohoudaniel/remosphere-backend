@@ -6,7 +6,9 @@ from celery import shared_task
 import logging
 from users.models import User
 from django.conf import settings
-
+import jwt
+import logging
+from datetime import datetime, timedelta
 
 
 signer = TimestampSigner()
@@ -97,5 +99,80 @@ def send_welcome_email(self, email, first_name=None):
 
     except Exception as exc:
         logger.exception("send_welcome_email failed for %s", email)
+        # retry with exponential backoff
+        raise self.retry(exc=exc, countdown=10)
+
+
+def make_password_reset_token(user_id):
+    """Create a short-lived JWT for password reset."""
+    now = datetime.utcnow()
+    exp = now + timedelta(minutes=getattr(settings, "PASSWORD_RESET_TOKEN_LIFETIME_MINUTES", 30))
+    payload = {
+        "sub": int(user_id),
+        "type": "password_reset",
+        "iat": int(now.timestamp()),
+        "exp": int(exp.timestamp()),
+    }
+    token = jwt.encode(payload, settings.PASSWORD_RESET_SIGNING_KEY, algorithm=settings.PASSWORD_RESET_ALGORITHM)
+    # PyJWT returns str in modern versions; ensure str
+    return token if isinstance(token, str) else token.decode()
+
+
+def verify_password_reset_token(token):
+    """
+    Return user_id if token valid, else None. Raises descriptive errors as needed.
+    """
+    try:
+        payload = jwt.decode(token, settings.PASSWORD_RESET_SIGNING_KEY, algorithms=[settings.PASSWORD_RESET_ALGORITHM])
+    except jwt.ExpiredSignatureError:
+        return {"error": "expired"}
+    except jwt.InvalidTokenError:
+        return {"error": "invalid"}
+
+    if payload.get("type") != "password_reset":
+        return {"error": "invalid_type"}
+
+    user_id = payload.get("sub")
+    if not user_id:
+        return {"error": "invalid_payload"}
+
+    return {"user_id": int(user_id)}
+
+
+@shared_task(bind=True, max_retries=3)
+def send_password_reset_email(self, user_email, reset_token, domain):
+    """
+    Sends password reset email (async).
+    Arguments are primitives so Celery can serialize.
+    """
+    try:
+        reset_path = reverse("password_reset_frontend")  # optional: frontend path name; or build custom
+    except Exception:
+        reset_path = "/reset-password"
+
+    # domain should already be absolute (e.g., request.build_absolute_uri("/"))
+    # Build final URL:
+    if domain.endswith("/"):
+        base = domain[:-1]
+    else:
+        base = domain
+    reset_url = f"{base}{reset_path}?token={reset_token}"
+
+    subject = "RemoSphere — Password reset instructions"
+    message = (
+        f"Hi,\n\n"
+        "We received a request to reset your RemoSphere password.\n"
+        f"Click the link below to reset it (valid for {settings.PASSWORD_RESET_TOKEN_LIFETIME_MINUTES} minutes):\n\n"
+        f"{reset_url}\n\n"
+        "If you didn't request this, you can safely ignore this email.\n"
+    )
+
+    try:
+        logger.info("Sending password reset email to %s", user_email)
+        send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [user_email], fail_silently=False)
+        logger.info("Password reset email sent to %s", user_email)
+        return True
+    except Exception as exc:
+        logger.exception("Failed sending password reset email to %s: %s", user_email, exc)
         # retry with exponential backoff
         raise self.retry(exc=exc, countdown=10)

@@ -48,14 +48,18 @@ urlpatterns = [
     # JSON schema view
     re_path(r'^swagger.json$', schema_view.without_ui(cache_timeout=0), name='schema-json'),
 
+    # Users
+    path("api/users/", include("users.urls")),
+
     # The job categories
     path('api/', include('categories.urls')),
 
-    # The Test Authentication
-     path("api/auth/", include("authentication.urls")),  # JWT token endpoints,
+    # The job applications
+    path("api/", include("jobs.urls")),
 
-    # User Authentication
-    path("api/users/", include("users.urls")),
-    path("api/token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
-    path("api/token/verify/", TokenVerifyView.as_view(), name="token_verify"),
+    # The Authentication
+    path("api/auth/", include("authentication.urls")),  # JWT token endpoints,
+
+    # path("api/token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
+    # path("api/token/verify/", TokenVerifyView.as_view(), name="token_verify"),
 ]
