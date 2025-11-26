@@ -199,9 +199,10 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Authentication
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
+        "authentication.cookie_auth.CookieJWTAuthentication",
         "rest_framework_simplejwt.authentication.JWTAuthentication",
         # fallback to header-only JWT
-        "rest_framework_simplejwt.authentication.JWTAuthentication",
+        # "rest_framework_simplejwt.authentication.JWTAuthentication",
     ),
     "DEFAULT_PERMISSION_CLASSES": (
         "rest_framework.permissions.IsAuthenticated",
@@ -213,6 +214,13 @@ REST_FRAMEWORK = {
 
 AUTH_USER_MODEL = 'users.User'
 
+# Cookie settings (for cookies created by our login/refresh endpoints)
+JWT_COOKIE_NAME = "refresh_token"        # refresh stored HttpOnly cookie
+JWT_ACCESS_COOKIE_NAME = "access_token"  # access cookie
+JWT_COOKIE_SECURE = env("JWT_COOKIE_SECURE")  # set to True in production (HTTPS)
+JWT_COOKIE_SAMESITE = "Lax" # or "Strict"
+JWT_COOKIE_HTTPONLY = True
+
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=60),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
@@ -221,36 +229,58 @@ SIMPLE_JWT = {
     "ALGORITHM": "HS256",
     "SIGNING_KEY": SECRET_KEY,
     "AUTH_HEADER_TYPES": ("Bearer",),
+    "AUTH_COOKIE": "access_token",
+    "AUTH_COOKIE_REFRESH": "refresh_token",
+    "AUTH_COOKIE_HTTP_ONLY": True,
+    "AUTH_COOKIE_SECURE": JWT_COOKIE_SECURE,
+    "AUTH_COOKIE_SAMESITE": "Lax",
 }
 
-# Cookie settings (for cookies created by our login/refresh endpoints)
-JWT_COOKIE_NAME = "remosphere_refresh"        # refresh stored HttpOnly cookie
-JWT_ACCESS_COOKIE_NAME = "remosphere_access"  # access cookie
-JWT_COOKIE_SECURE = env("JWT_COOKIE_SECURE")  # set to True in production (HTTPS)
-JWT_COOKIE_SAMESITE = "Lax"                   # or "Strict"
-JWT_COOKIE_HTTPONLY = True
+# SWAGGER_SETTINGS = {
+#     "USE_SESSION_AUTH": False,
+
+#     "SECURITY_DEFINITIONS": {
+#         "AccessTokenCookie": {
+#             "type": "apiKey",
+#                 "name": "access_token",   # your access cookie name
+#             "in": "cookie",
+#         },
+#         "RefreshTokenCookie": {
+#             "type": "apiKey",
+#             "name": "refresh_token",  # your refresh cookie name
+#             "in": "cookie",
+#         },
+#     },
+
+#     # "SECURITY_DEFINITIONS": {
+#     #     "JWTAuth": {
+#     #         "type": "apiKey",
+#     #         "in": "header",
+#     #         "name": "Authorization",
+#     #         "description": "Format: Bearer <token>"
+#     #     },
+#     #
+#     # "Bearer": {
+#     #     "type": "apiKey",
+#     #     "name": "Authorization",
+#     #     "in": "header"
+#     # },
+#     # "CookieAuth": {                          # cookie-based in Swagger
+#     #     "type": "apiKey",
+#     #     "in": "cookie",
+#     #     "name": os.getenv("JWT_ACCESS_COOKIE_NAME", "remosphere_access")
+#     # }
+#     # },
+# }
 
 SWAGGER_SETTINGS = {
     "SECURITY_DEFINITIONS": {
-        "JWTAuth": {
+        "cookieAuth": {
             "type": "apiKey",
-            "in": "header",
-            "name": "Authorization",
-            "description": "Format: Bearer <token>"
-        },
-
-        # "Bearer": {
-        #     "type": "apiKey",
-        #     "name": "Authorization",
-        #     "in": "header"
-        # },
-        # "CookieAuth": {                          # cookie-based in Swagger
-        #     "type": "apiKey",
-        #     "in": "cookie",
-        #     "name": os.getenv("JWT_ACCESS_COOKIE_NAME", "remosphere_access")
-        # }
-    },
-    "USE_SESSION_AUTH": False,
+            "in": "cookie",
+            "name": "access_token",
+        }
+    }
 }
 
 EMAIL_BACKEND = env("EMAIL_BACKEND")
@@ -284,3 +314,12 @@ CACHES = {
         "LOCATION": env("CELERY_BROKER_URL"),
     }
 }
+
+CORS_ALLOW_CREDENTIALS = True
+CSRF_COOKIE_HTTPONLY = False  # Swagger needs this
+SESSION_COOKIE_SECURE = JWT_COOKIE_SECURE
+CSRF_COOKIE_SECURE = JWT_COOKIE_SECURE
+CSRF_TRUSTED_ORIGINS = [
+    "http://127.0.0.1:8000",
+    "http://localhost:8000",
+]

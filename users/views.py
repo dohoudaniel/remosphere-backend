@@ -7,6 +7,8 @@ from .serializers import RegisterSerializer, LoginSerializer, UserSerializer
 from rest_framework.views import APIView
 from authentication.email_utils import send_welcome_email, send_verification_email
 from .models import User
+from django.conf import settings
+
 
 
 class RegisterView(generics.CreateAPIView):
@@ -71,7 +73,6 @@ class RequestVerificationEmailView(APIView):
         return Response({"detail": "Verification email sent"})
 
 
-
 class LoginView(generics.GenericAPIView):
     serializer_class = LoginSerializer
     permission_classes = [AllowAny]
@@ -103,8 +104,10 @@ class LoginView(generics.GenericAPIView):
         serializer.is_valid(raise_exception=True)
         # user = serializer.validated_data["user"]
         user = serializer.context.get("user")
+        access_token = serializer.validated_data["access"]
+        refresh_token = serializer.validated_data["refresh"]
 
-        return Response(
+        response = Response(
             {
                 "message": "Login successful",
                 "access": serializer.validated_data["access"],
@@ -113,6 +116,26 @@ class LoginView(generics.GenericAPIView):
             },
             status=status.HTTP_200_OK
         )
+        
+        # 2️⃣ Set HttpOnly Cookies
+        response.set_cookie(
+            "access_token",
+            access_token,
+            httponly=True,
+            secure=settings.JWT_COOKIE_SECURE,
+            samesite=settings.JWT_COOKIE_SAMESITE,
+        )
+
+        response.set_cookie(
+            "refresh_token",
+            refresh_token,
+            httponly=True,
+            secure=settings.JWT_COOKIE_SECURE,
+            samesite=settings.JWT_COOKIE_SAMESITE,
+        )
+        
+        return response
+
 
 
 class VerifyEmailView(APIView):
