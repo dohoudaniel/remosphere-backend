@@ -1,57 +1,26 @@
 [
   {
-    "title": "Backend Engineer (Django)",
-    "description": "Build scalable backend APIs, authentication systems, and cloud deployments.",
+    "title": "Senior Backend Engineer",
+    "description": "Work with Django, DRF, and microservices.",
+    "category": "Software Engineering",
     "location": "Remote",
     "job_type": "full_time",
-    "salary_range": "₦500,000 - ₦800,000",
-    "is_active": true,
-    "expiry_at": "2026-01-11T00:00:00Z",
-    "category": 1,
-    "company": 1
+    "salary_range": "$4000 - $6000",
+    "company_name": "TechNova",
+    "company": "TechNova",
+    "created_by_email": "admin@example.com",
+    "is_active": true
   },
   {
-    "title": "Frontend React Developer",
-    "description": "Develop high-performance UI dashboards and reusable components in React.",
-    "location": "Hybrid - Lagos",
-    "job_type": "full_time",
-    "salary_range": "₦450,000 - ₦700,000",
-    "is_active": true,
-    "expiry_at": "2025-12-27T00:00:00Z",
-    "category": 1,
-    "company": 2
-  },
-  {
-    "title": "Data Analyst (PowerBI / SQL)",
-    "description": "Analyze company metrics, build BI dashboards, and run structured queries.",
-    "location": "Remote",
-    "job_type": "full_time",
-    "salary_range": "₦350,000 - ₦600,000",
-    "is_active": true,
-    "expiry_at": "2026-01-16T00:00:00Z",
-    "category": 2,
-    "company": 3
-  },
-  {
-    "title": "DevOps Engineer",
-    "description": "Manage CI/CD pipelines, container orchestration, and monitoring systems.",
-    "location": "Remote",
-    "job_type": "full_time",
-    "salary_range": "₦600,000 - ₦1,000,000",
-    "is_active": true,
-    "expiry_at": "2026-01-06T00:00:00Z",
-    "category": 3,
-    "company": 1
-  },
-  {
-    "title": "AI/ML Engineer",
-    "description": "Build machine learning models, NLP features, and MLOps pipelines.",
-    "location": "Remote",
-    "job_type": "full_time",
-    "salary_range": "₦700,000 - ₦1,200,000",
-    "is_active": true,
-    "expiry_at": "2026-01-01T00:00:00Z",
-    "category": 4,
-    "company": 5
+    "title": "Product Designer",
+    "description": "Create dashboards, prototypes, and UI flows.",
+    "category": "Design",
+    "location": "Lagos",
+    "job_type": "remote",
+    "salary_range": "$2000 - $3500",
+    "company_name": "Designify",
+    "company": "Designify",
+    "created_by_email": null,
+    "is_active": true
   }
 ]
