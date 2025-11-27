@@ -1,15 +1,17 @@
 from django.conf import settings
 from django.db import models
 from django.utils.text import slugify
-from django.utils import timezone
-import random
 
 
 class Job(models.Model):
+    """
+    The Job postings model
+    """
     JOB_TYPE_FULL_TIME = "full_time"
     JOB_TYPE_PART_TIME = "part_time"
     JOB_TYPE_CONTRACT = "contract"
     JOB_TYPE_INTERNSHIP = "internship"
+    JOB_TYPE_REMOTE = "remote"
     JOB_TYPE_OTHER = "other"
 
     JOB_TYPE_CHOICES = [
@@ -17,6 +19,7 @@ class Job(models.Model):
         (JOB_TYPE_PART_TIME, "Part time"),
         (JOB_TYPE_CONTRACT, "Contract"),
         (JOB_TYPE_INTERNSHIP, "Internship"),
+        (JOB_TYPE_REMOTE, "Remote"),
         (JOB_TYPE_OTHER, "Other"),
     ]
 
@@ -54,7 +57,10 @@ class Job(models.Model):
     slug = models.URLField(max_length=255, unique=True, blank=True)
 
     # optional expiry that can flip is_active if you want
-    expiry_at = models.DateTimeField(null=True, blank=True, help_text="Optional expiry date after which is_active may be set to False.")
+    expiry_at = models.DateTimeField(
+        null=True,
+        blank=True,
+        help_text="Optional expiry date after which is_active may be set to False.")
 
     class Meta:
         ordering = ["-created_at"]
@@ -67,19 +73,3 @@ class Job(models.Model):
 
     def __str__(self):
         return f"{self.title} @ {self.company_name}"
-
-    # def save(self, *args, **kwargs):
-    #     # auto-generate slug if not provided
-    #     if not self.slug:
-    #         base = slugify(self.title)[:200] or "job"
-    #         slug = base
-    #         # avoid accidental collisions
-    #         while Job.objects.filter(slug=slug).exclude(pk=self.pk).exists():
-    #             slug = f"{base}-{random.randint(1000, 9999)}"
-    #         self.slug = slug
-
-    #     # optional auto-deactivate when expiry passed (does not auto-save DB changes)
-    #     if self.expiry_at and self.expiry_at <= timezone.now():
-    #         self.is_active = False
-
-    #     super().save(*args, **kwargs)

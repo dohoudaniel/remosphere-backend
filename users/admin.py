@@ -4,6 +4,10 @@ from .models import User
 
 
 class UserAdmin(BaseUserAdmin):
+    """
+    Custom User Admin for User
+    Authentication and Authorization
+    """
     model = User
 
     list_display = (
@@ -27,18 +31,13 @@ class UserAdmin(BaseUserAdmin):
     )
 
     add_fieldsets = (
-        (
-            None,
-            {
-                "classes": ("wide",),
-                "fields": ("email", "first_name", "last_name", "password1", "password2"),
-            },
-        ),
-    )
+        (None, {
+            "classes": (
+                "wide",), "fields": (
+                "email", "first_name", "last_name", "password1", "password2"), }, ), )
 
     search_fields = ("email", "first_name", "last_name")
     ordering = ("email",)
 
 
 admin.site.register(User, UserAdmin)
-

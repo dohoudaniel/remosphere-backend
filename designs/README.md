@@ -1,0 +1,1 @@
+This directory contains design images for the README display.

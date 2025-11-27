@@ -8,10 +8,14 @@ from rest_framework.views import APIView
 from authentication.email_utils import send_welcome_email, send_verification_email
 from .models import User
 from django.conf import settings
-
+from rest_framework.permissions import IsAuthenticated
+from rest_framework_simplejwt.tokens import RefreshToken
 
 
 class RegisterView(generics.CreateAPIView):
+    """
+    The User Sign Up View
+    """
     serializer_class = RegisterSerializer
     permission_classes = [AllowAny]
 
@@ -46,11 +50,15 @@ class RegisterView(generics.CreateAPIView):
             return user
         except IntegrityError as e:
             if "unique constraint" in str(e):
-                raise serializers.ValidationError({"email": "A user with this email already exists."})
+                raise serializers.ValidationError(
+                    {"email": "A user with this email already exists."})
             # raise e
 
 
 class RequestVerificationEmailView(APIView):
+    """
+    Requesting Verification as a User
+    """
     permission_classes = [AllowAny]
 
     def post(self, request):
@@ -74,6 +82,9 @@ class RequestVerificationEmailView(APIView):
 
 
 class LoginView(generics.GenericAPIView):
+    """
+    The User Login view
+    """
     serializer_class = LoginSerializer
     permission_classes = [AllowAny]
 
@@ -116,7 +127,7 @@ class LoginView(generics.GenericAPIView):
             },
             status=status.HTTP_200_OK
         )
-        
+
         # 2️⃣ Set HttpOnly Cookies
         response.set_cookie(
             "access_token",
@@ -133,12 +144,15 @@ class LoginView(generics.GenericAPIView):
             secure=settings.JWT_COOKIE_SECURE,
             samesite=settings.JWT_COOKIE_SAMESITE,
         )
-        
+
         return response
 
 
-
 class VerifyEmailView(APIView):
+    """
+    The functionality to verify user's email
+by sending a verification email to them.
+    """
     permission_classes = [AllowAny]
 
     def get(self, request, token):
@@ -156,11 +170,50 @@ class VerifyEmailView(APIView):
         # send_welcome_email(user)
         try:
             # send_welcome_email.delay(user.email)
-            return Response({"detail": "Email verified successfully"}, status=200)
+            return Response(
+                {"detail": "Email verified successfully"}, status=200)
 
         except Exception as e:
             logger.error(f"Error sending confirmation email: {e}")
-            return Response({"message": "Email verified, but confirmation email failed."}, status=status.HTTP_200_OK)
+            return Response(
+                {"message": "Email verified, but confirmation email failed."}, status=status.HTTP_200_OK)
 
-        # return Response({"detail": "Email verified successfully"}, status=200)
+        # return Response({"detail": "Email verified successfully"},
+        # status=200)
 
+
+class LogoutView(APIView):
+    """
+    The User Logout functionality.
+    It blacklists existing cookies, and
+    signs out the user.
+    """
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        refresh_token = request.COOKIES.get("refresh_token")
+
+        if not refresh_token:
+            response = Response(
+                {"detail": "Logged out."},
+                status=status.HTTP_200_OK
+            )
+            response.delete_cookie("access_token")
+            response.delete_cookie("refresh_token")
+            return response
+
+        try:
+            token = RefreshToken(refresh_token)
+            token.blacklist()   # <-- This is the server invalidation
+        except Exception:
+            pass
+
+        response = Response(
+            {"detail": "Logged out successfully"},
+            status=status.HTTP_200_OK
+        )
+
+        response.delete_cookie("access_token")
+        response.delete_cookie("refresh_token")
+
+        return response

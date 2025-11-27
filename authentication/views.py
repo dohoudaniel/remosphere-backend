@@ -20,13 +20,22 @@ User = get_user_model()
 
 
 def set_jwt_cookies(response, access_token, refresh_token):
+    """
+    Setting JWT Tokens to app settings on user login.
+    """
     cookie_opts = {
         "httponly": getattr(settings, "JWT_COOKIE_HTTPONLY", True),
         "secure": getattr(settings, "JWT_COOKIE_SECURE", False),
         "samesite": getattr(settings, "JWT_COOKIE_SAMESITE", "Lax"),
     }
-    access_cookie_name = getattr(settings, "JWT_ACCESS_COOKIE_NAME", "remosphere_access")
-    refresh_cookie_name = getattr(settings, "JWT_COOKIE_NAME", "remosphere_refresh")
+    access_cookie_name = getattr(
+        settings,
+        "JWT_ACCESS_COOKIE_NAME",
+        "remosphere_access")
+    refresh_cookie_name = getattr(
+        settings,
+        "JWT_COOKIE_NAME",
+        "remosphere_refresh")
 
     response.set_cookie(access_cookie_name, access_token, **cookie_opts)
     response.set_cookie(refresh_cookie_name, refresh_token, **cookie_opts)
@@ -34,6 +43,9 @@ def set_jwt_cookies(response, access_token, refresh_token):
 
 
 class LoginView(APIView):
+    """
+    The User Login View
+    """
     permission_classes = [permissions.AllowAny]
 
     @swagger_auto_schema(
@@ -56,7 +68,9 @@ class LoginView(APIView):
         }
     )
     def post(self, request):
-        serializer = LoginSerializer(data=request.data, context={"request": request})
+        serializer = LoginSerializer(
+            data=request.data, context={
+                "request": request})
         serializer.is_valid(raise_exception=True)
         user = serializer.context.get("user")
 
@@ -77,6 +91,9 @@ class LoginView(APIView):
 
 
 class CookieTokenRefreshView(APIView):
+    """
+    Cookie Token Refresh
+    """
     permission_classes = [permissions.AllowAny]
 
     @swagger_auto_schema(
@@ -96,11 +113,13 @@ class CookieTokenRefreshView(APIView):
         }
     )
     def post(self, request):
-        refresh_cookie_name = getattr(settings, "JWT_COOKIE_NAME", "remosphere_refresh")
+        refresh_cookie_name = getattr(
+            settings, "JWT_COOKIE_NAME", "remosphere_refresh")
         refresh_token = request.COOKIES.get(refresh_cookie_name)
 
         if not refresh_token:
-            return Response({"detail": "Refresh token cookie not found"}, status=401)
+            return Response(
+                {"detail": "Refresh token cookie not found"}, status=401)
 
         try:
             r = RefreshToken(refresh_token)
@@ -111,12 +130,18 @@ class CookieTokenRefreshView(APIView):
         refresh_str = str(r)
         access_str = str(new_access)
 
-        response = Response({"access": access_str, "refresh": refresh_str}, status=200)
+        response = Response(
+            {"access": access_str, "refresh": refresh_str}, status=200)
         set_jwt_cookies(response, access_str, refresh_str)
         return response
 
 
 class LogoutView(APIView):
+    """
+    User Logout Functionality,
+    and blacklisting of
+    assigned Cookies as tokens
+    """
     permission_classes = [permissions.IsAuthenticated]
 
     @swagger_auto_schema(
@@ -124,7 +149,8 @@ class LogoutView(APIView):
         responses={200: "Logged out"}
     )
     def post(self, request):
-        refresh_cookie_name = getattr(settings, "JWT_COOKIE_NAME", "remosphere_refresh")
+        refresh_cookie_name = getattr(
+            settings, "JWT_COOKIE_NAME", "remosphere_refresh")
         token = request.COOKIES.get(refresh_cookie_name)
 
         if token:
@@ -135,12 +161,25 @@ class LogoutView(APIView):
                 pass
 
         response = Response({"detail": "Logged out"}, status=200)
-        response.delete_cookie(getattr(settings, "JWT_COOKIE_NAME", "remosphere_refresh"))
-        response.delete_cookie(getattr(settings, "JWT_ACCESS_COOKIE_NAME", "remosphere_access"))
+        response.delete_cookie(
+            getattr(
+                settings,
+                "JWT_COOKIE_NAME",
+                "remosphere_refresh"))
+        response.delete_cookie(
+            getattr(
+                settings,
+                "JWT_ACCESS_COOKIE_NAME",
+                "remosphere_access"))
         return response
 
 
 class RequestVerificationView(APIView):
+    """
+    Requesting User Verification through emails.
+
+    Upon request, an email (celery scheduled) is sent
+    """
     permission_classes = [permissions.AllowAny]
 
     @swagger_auto_schema(
@@ -169,6 +208,9 @@ class RequestVerificationView(APIView):
 
 
 class VerifyEmailView(APIView):
+    """
+    Sending Verification emails to new users, or unverified users.
+    """
     permission_classes = [permissions.AllowAny]
 
     @swagger_auto_schema(
@@ -201,28 +243,31 @@ class VerifyEmailView(APIView):
 def _rate_limit_key_email(email):
     return f"pwreset:email:{email}"
 
+
 def _rate_limit_key_ip(ip):
     return f"pwreset:ip:{ip}"
 
 
 class ForgotPasswordView(APIView):
+    """
+    Forgot Password Functionality
+    """
     permission_classes = [AllowAny]
-    
+
     @swagger_auto_schema(
-    # method="post",
-    operation_description="Request a password reset email.",
-    request_body=ForgotPasswordSerializer,
-    responses={
-        200: openapi.Response("Success", schema=openapi.Schema(
-            type=openapi.TYPE_OBJECT,
-            properties={
-                "detail": openapi.Schema(type=openapi.TYPE_STRING)
-            }
-        )),
-        429: "Too many requests",
-    },
+        # method="post",
+        operation_summary="Request a password reset email.",
+        request_body=ForgotPasswordSerializer,
+        responses={
+            200: openapi.Response("Success", schema=openapi.Schema(
+                type=openapi.TYPE_OBJECT,
+                properties={
+                    "detail": openapi.Schema(type=openapi.TYPE_STRING)
+                }
+            )),
+            429: "Too many requests",
+        },
     )
-    
     def post(self, request):
         serializer = ForgotPasswordSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -231,17 +276,27 @@ class ForgotPasswordView(APIView):
         # Rate limiting per email
         email_key = _rate_limit_key_email(email)
         email_count = cache.get(email_key, 0)
-        if email_count >= getattr(settings, "PASSWORD_RESET_RATE_LIMIT_PER_HOUR", 5):
-            return Response({"detail": "Too many password reset requests for this email. Try again later."},
-                            status=status.HTTP_429_TOO_MANY_REQUESTS)
+        if email_count >= getattr(
+            settings,
+            "PASSWORD_RESET_RATE_LIMIT_PER_HOUR",
+                5):
+            return Response(
+                {
+                    "detail": "Too many password reset requests for this email. Try again later."},
+                status=status.HTTP_429_TOO_MANY_REQUESTS)
 
         # Rate limiting per IP
         ip = request.META.get("REMOTE_ADDR", "unknown")
         ip_key = _rate_limit_key_ip(ip)
         ip_count = cache.get(ip_key, 0)
-        if ip_count >= getattr(settings, "PASSWORD_RESET_RATE_LIMIT_IP_PER_HOUR", 20):
-            return Response({"detail": "Too many requests from your IP. Try again later."},
-                            status=status.HTTP_429_TOO_MANY_REQUESTS)
+        if ip_count >= getattr(
+            settings,
+            "PASSWORD_RESET_RATE_LIMIT_IP_PER_HOUR",
+                20):
+            return Response(
+                {
+                    "detail": "Too many requests from your IP. Try again later."},
+                status=status.HTTP_429_TOO_MANY_REQUESTS)
 
         # update counters (expire after 1 hour)
         cache.set(email_key, email_count + 1, timeout=3600)
@@ -254,28 +309,34 @@ class ForgotPasswordView(APIView):
             token = make_password_reset_token(user.id)
 
             # build domain from request (ensure trailing slash for base)
-            base = request.build_absolute_uri("/")  # e.g. http://127.0.0.1:8000/
+            base = request.build_absolute_uri(
+                "/")  # e.g. http://127.0.0.1:8000/
             # queue async sending (pass primitives)
-            send_password_reset_email.delay(user.email, token, base.rstrip("/"))  # remove trailing slash for build
+            send_password_reset_email.delay(
+                user.email, token, base.rstrip("/"))  # remove trailing slash for build
 
         # Always return same generic response for privacy
-        return Response({"detail": "If an account with that email exists, a password reset link has been sent."},
-                        status=status.HTTP_200_OK)
+        return Response(
+            {
+                "detail": "If an account with that email exists, a password reset link has been sent."},
+            status=status.HTTP_200_OK)
 
 
 class ResetPasswordView(APIView):
+    """
+    The Reset Password functionality
+    """
     permission_classes = [AllowAny]
-    
-    @swagger_auto_schema(
-    # method="post",
-    operation_description="Use a valid password reset token to set a new password.",
-    request_body=ResetPasswordSerializer,
-    responses={
-        200: "Password reset successful",
-        400: "Invalid or expired token",
-    },
-    )
 
+    @swagger_auto_schema(
+        # method="post",
+        operation_summary="Use a valid password reset token to set a new password.",
+        request_body=ResetPasswordSerializer,
+        responses={
+            200: "Password reset successful",
+            400: "Invalid or expired token",
+        },
+    )
     def post(self, request):
         serializer = ResetPasswordSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -287,17 +348,21 @@ class ResetPasswordView(APIView):
         if isinstance(result, dict) and result.get("error"):
             err = result["error"]
             if err == "expired":
-                return Response({"detail": "Reset link expired."}, status=status.HTTP_400_BAD_REQUEST)
-            return Response({"detail": "Invalid reset token."}, status=status.HTTP_400_BAD_REQUEST)
+                return Response({"detail": "Reset link expired."},
+                                status=status.HTTP_400_BAD_REQUEST)
+            return Response({"detail": "Invalid reset token."},
+                            status=status.HTTP_400_BAD_REQUEST)
 
         user_id = result.get("user_id")
         if not user_id:
-            return Response({"detail": "Invalid reset token."}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"detail": "Invalid reset token."},
+                            status=status.HTTP_400_BAD_REQUEST)
 
         try:
             user = User.objects.get(pk=user_id)
         except User.DoesNotExist:
-            return Response({"detail": "User not found."}, status=status.HTTP_404_NOT_FOUND)
+            return Response({"detail": "User not found."},
+                            status=status.HTTP_404_NOT_FOUND)
 
         # Set new password (use set_password to hash)
         user.set_password(new_password)
@@ -305,7 +370,8 @@ class ResetPasswordView(APIView):
         # user.password_changed_at = timezone.now()
         user.save(update_fields=["password"])
 
-        # Blacklist outstanding refresh tokens for the user (if token_blacklist app is enabled)
+        # Blacklist outstanding refresh tokens for the user (if token_blacklist
+        # app is enabled)
         try:
             from rest_framework_simplejwt.token_blacklist.models import OutstandingToken, BlacklistedToken
             tokens = OutstandingToken.objects.filter(user=user)
@@ -319,4 +385,5 @@ class ResetPasswordView(APIView):
             # token blacklisting not available/configured — ignore
             pass
 
-        return Response({"detail": "Password has been reset successfully."}, status=status.HTTP_200_OK)
+        return Response(
+            {"detail": "Password has been reset successfully."}, status=status.HTTP_200_OK)
