@@ -25,20 +25,15 @@ WORKDIR /app
 COPY --from=builder /install /usr/local
 COPY . .
 
-# Create staticfiles directory
-RUN mkdir -p /app/staticfiles
-
-# Collect static at build time (MUCH faster)
-RUN python manage.py collectstatic --noinput
-
-# Create non-root user
+RUN mkdir -p /app/staticfiles && chown -R 1000:1000 /app/staticfiles
 RUN useradd -u 1000 -ms /bin/bash appuser
+
 USER appuser
 
 EXPOSE 8000
 
 ENV PYTHONUNBUFFERED=1
 ENV DJANGO_SETTINGS_MODULE=remosphere.settings
+ENV STATIC_ROOT=/app/staticfiles
 
-# Final command
-CMD ["gunicorn", "remosphere.wsgi:application", "--bind", "0.0.0.0:8000", "--workers", "2", "--threads", "2", "--log-level", "info"]
+CMD ["/bin/sh", "-c", "python manage.py migrate --noinput && python manage.py collectstatic --noinput && gunicorn remosphere.wsgi:application --bind 0.0.0.0:8000 --workers 2 --threads 2 --log-level info"]
