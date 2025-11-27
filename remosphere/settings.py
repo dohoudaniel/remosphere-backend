@@ -213,7 +213,9 @@ SWAGGER_SETTINGS = {
             "in": "cookie",
             "name": "access_token",
         }
-    }
+    },
+    "USE_SESSION_AUTH": False,
+    "LOGIN_REQUIRED": False,
 }
 
 EMAIL_BACKEND = env("EMAIL_BACKEND")
