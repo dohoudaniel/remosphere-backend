@@ -21,8 +21,3 @@ def send_welcome_on_verification(sender, instance, created, **kwargs):
         if (not prev) and current:
             # send task with primitive args
             send_welcome_email.delay(instance.email, instance.first_name)
-
-    # Optionally: send welcome on create (if you want)
-    # if created:
-    #     send_welcome_email.delay(instance.email, getattr(instance, "first_name", None))
-

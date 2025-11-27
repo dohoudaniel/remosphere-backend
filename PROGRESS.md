@@ -26,5 +26,5 @@
 
 ## 27th November 2025 (05:17 AM)
 - **Major Win**: Implemented and tested the correct user's access to endpoints, and user authorization implemented.
-- Next Steps: Fix category filtering (it shows by id instead), case sensitive location filtering (fix this to use .lower), clean up the codebase and re-arrange spaghetti code, implement documentation, write tests.
+- Next Steps: Design `applications` app, Fix category filtering (it shows by id instead), case sensitive location filtering (fix this to use .lower), clean up the codebase and re-arrange spaghetti code, implement documentation, write tests.
 - Final Steps before cleanup: Migration to a new DB server on production, Deployment, and Vibe-code of Frontend.

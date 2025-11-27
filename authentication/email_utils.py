@@ -49,22 +49,6 @@ def send_verification_email(user_id, domain): # (user_id, request=None):
     send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [user.email])
 
 
-# def send_welcome_email(user):
-#     subject = "Welcome to RemoSphere! 🌎"
-#     message = (
-#         f"Hi {user.first_name or user.username},\n\n"
-#         "Your email has been successfully verified.\n"
-#         "You now have access to all of RemoSphere's features.\n"
-#         "Welcome aboard!"
-#     )
-# 
-#     try:
-#         send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [user.email], fail_silently=False)
-#         return f"Email sent to {email}"
-# 
-#     except Exception as exc:
-#         raise self.retry(exc=exc, countdown=10)  # retry after 10 seconds
-
 @shared_task(bind=True, max_retries=5)
 def send_welcome_email(self, email, first_name=None):
     """
