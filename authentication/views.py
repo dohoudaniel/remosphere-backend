@@ -295,7 +295,8 @@ class ForgotPasswordView(APIView):
                 "/")  # e.g. http://127.0.0.1:8000/
             # queue async sending (pass primitives)
             send_password_reset_email.delay(
-                user.email, token, base.rstrip("/"))  # remove trailing slash for build
+                # remove trailing slash for build
+                user.email, token, base.rstrip("/"))
 
         # Always return same generic response for privacy
         return Response(

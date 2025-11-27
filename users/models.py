@@ -14,6 +14,7 @@ class UserManager(BaseUserManager):
 
     This mirrors Django's recommended pattern for custom user models.
     """
+
     def create_user(
             self,
             email,

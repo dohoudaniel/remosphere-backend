@@ -107,7 +107,7 @@ def make_password_reset_token(user_id):
     """
     now = datetime.utcnow()
     exp = now + timedelta(minutes=getattr(settings,
-                        "PASSWORD_RESET_TOKEN_LIFETIME_MINUTES", 30))
+                                          "PASSWORD_RESET_TOKEN_LIFETIME_MINUTES", 30))
     payload = {
         "sub": int(user_id),
         "type": "password_reset",
