@@ -28,3 +28,16 @@
 - **Major Win**: Implemented and tested the correct user's access to endpoints, and user authorization implemented.
 - Next Steps: Design `applications` app, Fix category filtering (it shows by id instead), case sensitive location filtering (fix this to use .lower), clean up the codebase and re-arrange spaghetti code, implement documentation, write tests.
 - Final Steps before cleanup: Migration to a new DB server on production, Deployment, and Vibe-code of Frontend.
+
+
+## 27th November 2025 (9:49 AM)
+- Implemented a correct case-insensitive category, location and job type filtering
+- Implemented searching of category by category name, instead of id
+- Implemented little documentation with AI
+- Re-arranged Spaghetti code and comments
+- TODO:
+      - create applications app,
+      - implement user application functionality,
+      - write tests
+      - design frontend application
+      - clean up codebase

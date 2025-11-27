@@ -6,10 +6,20 @@ from companies.models import Company
 
 class JobSerializer(serializers.ModelSerializer):
     created_by = serializers.CharField(
-        source="created_by.email", read_only=True)
-    category = serializers.PrimaryKeyRelatedField(
-        queryset=Category.objects.all()
+        source="created_by.email", read_only=True
     )
+
+    # readable names
+    category_name = serializers.CharField(
+        source="category.name",
+        read_only=True
+    )
+    company_name = serializers.CharField(
+        source="company.name",
+        read_only=True
+    )
+
+    applications_count = serializers.IntegerField(read_only=True)
 
     class Meta:
         model = Job
@@ -20,10 +30,16 @@ class JobSerializer(serializers.ModelSerializer):
             "created_by",
             "created_at",
             "updated_at",
-            "slug"]
+            "slug",
+            "applications_count"
+        ]
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # safe dynamic querysets
-        self.fields["category"].queryset = Category.objects.all()
-        self.fields["company"].queryset = Company.objects.all()
+
+        # Safe dynamic querysets for browsable API
+        if "category" in self.fields:
+            self.fields["category"].queryset = Category.objects.all()
+
+        if "company" in self.fields:
+            self.fields["company"].queryset = Company.objects.all()
