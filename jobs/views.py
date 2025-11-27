@@ -7,18 +7,41 @@ from .serializers import JobSerializer
 # from .permissions import IsAdminOrReadOnly
 from categories.models import Category
 from users.permissions import IsAdminOrReadOnly
+from .filters import JobFilter
 
 
 class JobViewSet(viewsets.ModelViewSet):
-    queryset = Job.objects.all().select_related("category", "company", "created_by")
+    # .order_by("-created_at")  # .select_related("category", "company", "created_by")
+    queryset = Job.objects.all()
     serializer_class = JobSerializer
     permission_classes = [IsAdminOrReadOnly]  # [IsAuthenticated]
     filter_backends = [
         DjangoFilterBackend,
         filters.SearchFilter,
         filters.OrderingFilter]
-    filterset_fields = ["location", "category"]
-    search_fields = ["title", "description", "company_name", "location"]
+    filterset_class = JobFilter
+
+    # filterset_fields = ["location", "category"]
+    # search_fields = ["title", "description", "company_name", "category_name", "location"]
+
+    search_fields = [
+        "title",
+        "description",
+        "category__name",   # search by category name
+        "company_name",    # search by company name
+        "location",
+        "job_type",
+    ]
+
+    # EXACT FILTER FIELDS
+    filterset_fields = [
+        "category__name",
+        "company_name",
+        "location",
+        "job_type",
+        "is_active",
+    ]
+
     ordering_fields = ["created_at", "updated_at", "title"]
 
     def get_queryset(self):

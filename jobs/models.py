@@ -8,6 +8,7 @@ class Job(models.Model):
     JOB_TYPE_PART_TIME = "part_time"
     JOB_TYPE_CONTRACT = "contract"
     JOB_TYPE_INTERNSHIP = "internship"
+    JOB_TYPE_REMOTE = "remote"
     JOB_TYPE_OTHER = "other"
 
     JOB_TYPE_CHOICES = [
@@ -15,6 +16,7 @@ class Job(models.Model):
         (JOB_TYPE_PART_TIME, "Part time"),
         (JOB_TYPE_CONTRACT, "Contract"),
         (JOB_TYPE_INTERNSHIP, "Internship"),
+        (JOB_TYPE_REMOTE, "Remote"),
         (JOB_TYPE_OTHER, "Other"),
     ]
 
