@@ -1,0 +1,27 @@
+[
+    {
+        "name": "TechNova Solutions",
+        "description": "A global software engineering company building scalable cloud platforms.",
+        "website": "https://www.technova.io"
+    },
+    {
+        "name": "GreenByte Energy",
+        "description": "A clean-tech startup building AI-powered renewable energy optimization tools.",
+        "website": "https://www.greenbyte.energy"
+    },
+    {
+        "name": "Skyline Finance",
+        "description": "A fintech company providing digital banking and investment automation tools.",
+        "website": "https://www.skylinefinance.com"
+    },
+    {
+        "name": "EduCore Learning",
+        "description": "An EdTech company offering modern learning tools for African students.",
+        "website": "https://www.educore.africa"
+    },
+    {
+        "name": "HealthBridge Labs",
+        "description": "Healthcare AI company focusing on early disease detection and digital clinics.",
+        "website": "https://www.healthbridgelabs.com"
+    }
+]
