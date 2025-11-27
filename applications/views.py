@@ -24,10 +24,25 @@ class ApplicationViewSet(viewsets.ModelViewSet):
         return ApplicationDetailSerializer
 
     def get_queryset(self):
+        # Needed so Swagger/OpenAPI schema generation doesn't crash
+        if getattr(self, "swagger_fake_view", False):
+            return Application.objects.none()
+
         user = self.request.user
-        if user.is_admin:
-            return super().get_queryset()
-        return super().get_queryset().filter(user=user)
+
+        # normalize admin check
+        is_admin = getattr(user, "is_admin", False)
+
+        if is_admin:
+            return Application.objects.all()
+            # return super().get_queryset()
+            
+        if user.is_authenticated:
+            return Application.objects.filter(user=user)
+    
+        # return super().get_queryset().filter(user=user)
+        # anonymous user → return empty queryset (prevents errors)
+        return Application.objects.none()
 
     def perform_create(self, serializer):
         # serializer.create will set user from request
