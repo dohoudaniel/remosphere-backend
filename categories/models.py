@@ -13,5 +13,6 @@ class Category(models.Model):
 
     name = models.CharField(max_length=150, unique=True, db_index=True)
     # slug = models.SlugField(max_length=160, unique=True, blank=True)
-    description = models.TextField(blank=True, help_text="Optional description of this category.")
+    description = models.TextField(
+        blank=True, help_text="Optional description of this category.")
     created_at = models.DateTimeField(default=timezone.now, editable=False)

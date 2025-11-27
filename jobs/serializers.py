@@ -5,7 +5,8 @@ from companies.models import Company
 
 
 class JobSerializer(serializers.ModelSerializer):
-    created_by = serializers.CharField(source="created_by.email", read_only=True)
+    created_by = serializers.CharField(
+        source="created_by.email", read_only=True)
     category = serializers.PrimaryKeyRelatedField(
         queryset=Category.objects.all()
     )
@@ -14,8 +15,12 @@ class JobSerializer(serializers.ModelSerializer):
         model = Job
         fields = "__all__"
 
-        read_only_fields = ["id", "created_by", "created_at", "updated_at", "slug"]
-
+        read_only_fields = [
+            "id",
+            "created_by",
+            "created_at",
+            "updated_at",
+            "slug"]
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

@@ -11,7 +11,8 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path
-import os, environ
+import os
+import environ
 from datetime import timedelta
 
 
@@ -181,7 +182,8 @@ AUTH_USER_MODEL = 'users.User'
 # Cookie settings (for cookies created by our login/refresh endpoints)
 JWT_COOKIE_NAME = "refresh_token"        # refresh stored HttpOnly cookie
 JWT_ACCESS_COOKIE_NAME = "access_token"  # access cookie
-JWT_COOKIE_SECURE = env("JWT_COOKIE_SECURE")  # set to True in production (HTTPS)
+# set to True in production (HTTPS)
+JWT_COOKIE_SECURE = env("JWT_COOKIE_SECURE")
 JWT_COOKIE_SAMESITE = "Lax"  # or "Strict"
 JWT_COOKIE_HTTPONLY = True
 
@@ -226,14 +228,20 @@ ANYMAIL = {
 CELERY_BROKER_URL = env("CELERY_BROKER_URL")
 
 # Password reset token lifetime (minutes)
-PASSWORD_RESET_TOKEN_LIFETIME_MINUTES = env.int("PASSWORD_RESET_TOKEN_LIFETIME_MINUTES", 30)
+PASSWORD_RESET_TOKEN_LIFETIME_MINUTES = env.int(
+    "PASSWORD_RESET_TOKEN_LIFETIME_MINUTES", 30)
 
 # Rate limiting for password-reset requests
-PASSWORD_RESET_RATE_LIMIT_PER_HOUR = env.int("PASSWORD_RESET_RATE_LIMIT_PER_HOUR", 5)
-PASSWORD_RESET_RATE_LIMIT_IP_PER_HOUR = env.int("PASSWORD_RESET_RATE_LIMIT_IP_PER_HOUR", 20)
+PASSWORD_RESET_RATE_LIMIT_PER_HOUR = env.int(
+    "PASSWORD_RESET_RATE_LIMIT_PER_HOUR", 5)
+PASSWORD_RESET_RATE_LIMIT_IP_PER_HOUR = env.int(
+    "PASSWORD_RESET_RATE_LIMIT_IP_PER_HOUR", 20)
 
-# secret for signing password-reset JWTs (you can reuse SECRET_KEY or use another env var)
-PASSWORD_RESET_SIGNING_KEY = env("PASSWORD_RESET_SIGNING_KEY", default=SECRET_KEY)
+# secret for signing password-reset JWTs (you can reuse SECRET_KEY or use
+# another env var)
+PASSWORD_RESET_SIGNING_KEY = env(
+    "PASSWORD_RESET_SIGNING_KEY",
+    default=SECRET_KEY)
 PASSWORD_RESET_ALGORITHM = "HS256"
 
 CACHES = {

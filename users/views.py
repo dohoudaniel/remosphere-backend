@@ -47,7 +47,8 @@ class RegisterView(generics.CreateAPIView):
             return user
         except IntegrityError as e:
             if "unique constraint" in str(e):
-                raise serializers.ValidationError({"email": "A user with this email already exists."})
+                raise serializers.ValidationError(
+                    {"email": "A user with this email already exists."})
             # raise e
 
 
@@ -134,9 +135,8 @@ class LoginView(generics.GenericAPIView):
             secure=settings.JWT_COOKIE_SECURE,
             samesite=settings.JWT_COOKIE_SAMESITE,
         )
-        
-        return response
 
+        return response
 
 
 class VerifyEmailView(APIView):
@@ -157,13 +157,16 @@ class VerifyEmailView(APIView):
         # send_welcome_email(user)
         try:
             # send_welcome_email.delay(user.email)
-            return Response({"detail": "Email verified successfully"}, status=200)
+            return Response(
+                {"detail": "Email verified successfully"}, status=200)
 
         except Exception as e:
             logger.error(f"Error sending confirmation email: {e}")
-            return Response({"message": "Email verified, but confirmation email failed."}, status=status.HTTP_200_OK)
+            return Response(
+                {"message": "Email verified, but confirmation email failed."}, status=status.HTTP_200_OK)
 
-        # return Response({"detail": "Email verified successfully"}, status=200)
+        # return Response({"detail": "Email verified successfully"},
+        # status=200)
 
 
 class LogoutView(APIView):

@@ -18,11 +18,13 @@ class StrongPasswordValidator:
 
         # Uppercase
         if not re.search(r"[A-Z]", password):
-            errors.append(_("Password must contain at least one uppercase letter."))
+            errors.append(
+                _("Password must contain at least one uppercase letter."))
 
         # Lowercase
         if not re.search(r"[a-z]", password):
-            errors.append(_("Password must contain at least one lowercase letter."))
+            errors.append(
+                _("Password must contain at least one lowercase letter."))
 
         # Digit
         if not re.search(r"\d", password):
@@ -30,7 +32,8 @@ class StrongPasswordValidator:
 
         # Special character
         if not re.search(r"[^\w]", password):
-            errors.append(_("Password must contain at least one special character (!@#$%^&* etc)."))
+            errors.append(
+                _("Password must contain at least one special character (!@#$%^&* etc)."))
 
         if errors:
             raise ValidationError(errors)

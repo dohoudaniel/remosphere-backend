@@ -6,7 +6,6 @@ from rest_framework.exceptions import AuthenticationFailed
 from django.contrib.auth.password_validation import validate_password
 
 
-
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
@@ -78,7 +77,8 @@ class LoginSerializer(serializers.Serializer):
             raise serializers.ValidationError("Invalid email or password")
 
         if not user.email_verified:
-            raise AuthenticationFailed("Email is not verified. Please verify to continue.")
+            raise AuthenticationFailed(
+                "Email is not verified. Please verify to continue.")
 
         refresh = RefreshToken.for_user(user)
 
@@ -88,4 +88,3 @@ class LoginSerializer(serializers.Serializer):
             "access": str(refresh.access_token),
             "refresh": str(refresh),
         }
-

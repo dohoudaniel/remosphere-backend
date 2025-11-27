@@ -2,6 +2,7 @@ from django.conf import settings
 from django.db import models
 from django.utils.text import slugify
 
+
 class Job(models.Model):
     JOB_TYPE_FULL_TIME = "full_time"
     JOB_TYPE_PART_TIME = "part_time"
@@ -51,7 +52,10 @@ class Job(models.Model):
     slug = models.URLField(max_length=255, unique=True, blank=True)
 
     # optional expiry that can flip is_active if you want
-    expiry_at = models.DateTimeField(null=True, blank=True, help_text="Optional expiry date after which is_active may be set to False.")
+    expiry_at = models.DateTimeField(
+        null=True,
+        blank=True,
+        help_text="Optional expiry date after which is_active may be set to False.")
 
     class Meta:
         ordering = ["-created_at"]

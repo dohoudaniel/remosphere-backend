@@ -15,7 +15,8 @@ from users.permissions import IsAdminOrReadOnly
 #         if request.method in permissions.SAFE_METHODS:
 #             return request.user and request.user.is_authenticated
 #         # Write permissions are only allowed to admin users
-#         return request.user and request.user.is_authenticated and request.user.is_admin
+# return request.user and request.user.is_authenticated and
+# request.user.is_admin
 
 
 class CategoryViewSet(viewsets.ModelViewSet):
@@ -28,4 +29,3 @@ class CategoryViewSet(viewsets.ModelViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
     permission_classes = [IsAdminOrReadOnly]
-

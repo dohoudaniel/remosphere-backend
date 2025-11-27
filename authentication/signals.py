@@ -8,6 +8,7 @@ logger = logging.getLogger(__name__)
 
 User = get_user_model()
 
+
 @receiver(post_save, sender=User)
 def send_welcome_on_verification(sender, instance, created, **kwargs):
     # Trigger welcome when user toggles from unverified -> verified
@@ -15,8 +16,12 @@ def send_welcome_on_verification(sender, instance, created, **kwargs):
         prev = getattr(instance, "_previous_is_verified", False)
         current = getattr(instance, "email_verified", False)
 
-        logger.info("signal: prev=%s, current=%s, created=%s, user=%s", prev, current, created, instance.email)
-
+        logger.info(
+            "signal: prev=%s, current=%s, created=%s, user=%s",
+            prev,
+            current,
+            created,
+            instance.email)
 
         if (not prev) and current:
             # send task with primitive args

@@ -4,8 +4,10 @@ from django.utils.translation import gettext_lazy as _
 
 User = get_user_model()
 
+
 class ForgotPasswordSerializer(serializers.Serializer):
     email = serializers.EmailField()
+
 
 class ResetPasswordSerializer(serializers.Serializer):
     token = serializers.CharField()
@@ -16,6 +18,7 @@ class ResetPasswordSerializer(serializers.Serializer):
         try:
             password_validation.validate_password(value)
         except Exception as exc:
-            # password_validation raises ValidationError, whose messages live in exc.messages
+            # password_validation raises ValidationError, whose messages live
+            # in exc.messages
             raise serializers.ValidationError(exc.messages)
         return value

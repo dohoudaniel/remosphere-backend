@@ -1,8 +1,15 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 
+
 class UserManager(BaseUserManager):
-    def create_user(self, email, first_name, last_name, password=None, **extra_fields):
+    def create_user(
+            self,
+            email,
+            first_name,
+            last_name,
+            password=None,
+            **extra_fields):
         if not email:
             raise ValueError("Email must be set")
         email = self.normalize_email(email)
@@ -18,17 +25,29 @@ class UserManager(BaseUserManager):
         user.save(using=self._db)
         return user
 
-    def create_superuser(self, email, first_name, last_name, password=None, **extra_fields):
+    def create_superuser(
+            self,
+            email,
+            first_name,
+            last_name,
+            password=None,
+            **extra_fields):
         extra_fields.setdefault("is_admin", True)
         extra_fields.setdefault("role", "admin")
         # Accept username to avoid TypeError
         # extra_fields.setdefault("username", "")
-        return self.create_user(email, first_name, last_name, password, **extra_fields)
+        return self.create_user(
+            email,
+            first_name,
+            last_name,
+            password,
+            **extra_fields)
 
 
 class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(unique=True, db_index=True)
-    # username = models.CharField(max_length=50, unique=True)  # firstname+lastname
+    # username = models.CharField(max_length=50, unique=True)  #
+    # firstname+lastname
     first_name = models.CharField(max_length=25)
     last_name = models.CharField(max_length=25)
     role = models.CharField(max_length=50, default="user")  # 'admin' or 'user'
