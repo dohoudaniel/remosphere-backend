@@ -94,5 +94,5 @@ urlpatterns = [
     path("api/", include("applications.urls")),
     
     # The Home route
-    path("", api_root, name='api-root'),
+    # path("", api_root, name='api-root'),
 ]
