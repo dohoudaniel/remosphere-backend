@@ -8,6 +8,7 @@ from .serializers import JobSerializer
 from categories.models import Category
 from users.permissions import IsAdminOrReadOnly
 from .filters import JobFilter
+from django.db.models import Count
 
 
 class JobViewSet(viewsets.ModelViewSet):
@@ -45,12 +46,16 @@ class JobViewSet(viewsets.ModelViewSet):
     ordering_fields = ["created_at", "updated_at", "title"]
 
     def get_queryset(self):
-        qs = super().get_queryset()
+        qs = Job.objects.all().annotate(
+            applications_count=Count("applications__user", distinct=True)
+        )
+        # qs = super().get_queryset()
         # non-admins only see active jobs
         user = self.request.user
         if not (user.is_authenticated):  # and user.is_staff):
             qs = qs.filter(is_active=True)
         return qs
+
 
     def get_serializer(self, *args, **kwargs):
         ser = super().get_serializer(*args, **kwargs)
@@ -64,3 +69,6 @@ class JobViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(created_by=self.request.user)
+
+
+

@@ -19,6 +19,8 @@ class JobSerializer(serializers.ModelSerializer):
         read_only=True
     )
 
+    applications_count = serializers.IntegerField(read_only=True)
+
     class Meta:
         model = Job
         fields = "__all__"
@@ -29,6 +31,7 @@ class JobSerializer(serializers.ModelSerializer):
             "created_at",
             "updated_at",
             "slug",
+            "applications_count"
         ]
 
     def __init__(self, *args, **kwargs):
