@@ -18,6 +18,11 @@ from .models import User
 from django.conf import settings
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
+from django.db import IntegrityError
+from rest_framework import serializers
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class RegisterView(generics.CreateAPIView):
@@ -31,9 +36,38 @@ class RegisterView(generics.CreateAPIView):
     """
 
     @swagger_auto_schema(
+        operation_id="register_user",
         operation_summary="Register a new user",
+        operation_description="Create a new user account and send email verification. User must verify email before being able to login.",
         request_body=RegisterSerializer,
-        responses={201: "User created"}
+        responses={
+            201: openapi.Response(
+                description="User registration successful",
+                schema=openapi.Schema(
+                    type=openapi.TYPE_OBJECT,
+                    properties={
+                        "detail": openapi.Schema(
+                            type=openapi.TYPE_STRING,
+                            description="Registration success message"
+                        )
+                    }
+                )
+            ),
+            400: openapi.Response(
+                description="Validation error",
+                schema=openapi.Schema(
+                    type=openapi.TYPE_OBJECT,
+                    properties={
+                        "field_name": openapi.Schema(
+                            type=openapi.TYPE_ARRAY,
+                            items=openapi.Schema(type=openapi.TYPE_STRING),
+                            description="Field validation errors"
+                        )
+                    }
+                )
+            )
+        },
+        tags=["Authentication"]
     )
     def post(self, request, *args, **kwargs):
         # Use serializer to create the user
@@ -72,6 +106,35 @@ class RequestVerificationEmailView(APIView):
     Endpoint to request resending of verification emails.
     """
 
+    @swagger_auto_schema(
+        operation_id="request_verification_email",
+        operation_summary="Request email verification resend",
+        operation_description="Resend verification email to user. Can be used by authenticated user or with email parameter.",
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                "email": openapi.Schema(
+                    type=openapi.TYPE_STRING,
+                    format=openapi.FORMAT_EMAIL,
+                    description="Email address to send verification to (required if not authenticated)"
+                )
+            }
+        ),
+        responses={
+            200: openapi.Response(
+                description="Verification email sent",
+                schema=openapi.Schema(
+                    type=openapi.TYPE_OBJECT,
+                    properties={
+                        "detail": openapi.Schema(type=openapi.TYPE_STRING)
+                    }
+                )
+            ),
+            400: "User already verified or bad request",
+            404: "User not found"
+        },
+        tags=["Authentication"]
+    )
     def post(self, request):
         user = request.user if request.user.is_authenticated else None
         email = request.data.get("email")
@@ -101,7 +164,9 @@ class LoginView(generics.GenericAPIView):
     """
 
     @swagger_auto_schema(
+        operation_id="login_user",
         operation_summary="Login and receive access + refresh tokens",
+        operation_description="Authenticate user with email/password and return JWT tokens. Also sets HttpOnly cookies for token storage.",
         request_body=LoginSerializer,
         responses={
             200: openapi.Response(
@@ -166,6 +231,36 @@ class VerifyEmailView(APIView):
     Verify an email address using a token provided in the URL.
     """
 
+    @swagger_auto_schema(
+        operation_id="verify_email",
+        operation_summary="Verify user email address",
+        operation_description="Verify user email using token from verification email. Sets email_verified to True.",
+        manual_parameters=[
+            openapi.Parameter(
+                "token",
+                openapi.IN_PATH,
+                description="Email verification token",
+                type=openapi.TYPE_STRING,
+                required=True
+            )
+        ],
+        responses={
+            200: openapi.Response(
+                description="Email verified successfully",
+                schema=openapi.Schema(
+                    type=openapi.TYPE_OBJECT,
+                    properties={
+                        "detail": openapi.Schema(
+                            type=openapi.TYPE_STRING,
+                            description="Verification success message"
+                        )
+                    }
+                )
+            ),
+            400: "Invalid or expired token"
+        },
+        tags=["Authentication"]
+    )
     def get(self, request, token):
         user = verify_token(token)  # You already have this func
 
@@ -201,6 +296,28 @@ class LogoutView(APIView):
     refresh tokens and clears cookies.
     """
 
+    @swagger_auto_schema(
+        operation_id="logout_user",
+        operation_summary="Logout user",
+        operation_description="Logout user by blacklisting refresh token and clearing authentication cookies.",
+        security=[{"JWTAuth": []}],
+        responses={
+            200: openapi.Response(
+                description="Successfully logged out",
+                schema=openapi.Schema(
+                    type=openapi.TYPE_OBJECT,
+                    properties={
+                        "detail": openapi.Schema(
+                            type=openapi.TYPE_STRING,
+                            description="Logout success message"
+                        )
+                    }
+                )
+            ),
+            401: "Authentication required"
+        },
+        tags=["Authentication"]
+    )
     def post(self, request):
         refresh_token = request.COOKIES.get("refresh_token")
 

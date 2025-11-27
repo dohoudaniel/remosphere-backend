@@ -50,7 +50,9 @@ class LoginView(APIView):
     permission_classes = [permissions.AllowAny]
 
     @swagger_auto_schema(
+        operation_id="auth_login",
         operation_summary="Login user and return JWT tokens",
+        operation_description="Authenticate user credentials and return JWT tokens with HttpOnly cookies.",
         request_body=LoginSerializer,
         responses={
             200: openapi.Response(
@@ -66,7 +68,8 @@ class LoginView(APIView):
                 )
             ),
             400: "Invalid credentials"
-        }
+        },
+        tags=["Authentication"]
     )
     def post(self, request):
         serializer = LoginSerializer(
@@ -95,7 +98,9 @@ class CookieTokenRefreshView(APIView):
     permission_classes = [permissions.AllowAny]
 
     @swagger_auto_schema(
+        operation_id="auth_refresh_token",
         operation_summary="Refresh JWT tokens from HttpOnly cookie",
+        operation_description="Refresh access and refresh tokens using the refresh token stored in HttpOnly cookies.",
         responses={
             200: openapi.Response(
                 description="Tokens refreshed",
@@ -108,7 +113,8 @@ class CookieTokenRefreshView(APIView):
                 )
             ),
             401: "Invalid or missing refresh token"
-        }
+        },
+        tags=["Authentication"]
     )
     def post(self, request):
         refresh_cookie_name = getattr(
@@ -171,15 +177,34 @@ class RequestVerificationView(APIView):
     permission_classes = [permissions.AllowAny]
 
     @swagger_auto_schema(
+        operation_id="auth_request_verification",
         operation_summary="Send email verification link",
+        operation_description="Request a new email verification link to be sent to the specified email address.",
         request_body=openapi.Schema(
             type=openapi.TYPE_OBJECT,
             properties={
-                "email": openapi.Schema(type=openapi.TYPE_STRING)
+                "email": openapi.Schema(
+                    type=openapi.TYPE_STRING,
+                    format=openapi.FORMAT_EMAIL,
+                    description="Email address to send verification link to"
+                )
             },
             required=["email"]
         ),
-        responses={200: "Verification email sent", 404: "User not found"}
+        responses={
+            200: openapi.Response(
+                description="Verification email sent",
+                schema=openapi.Schema(
+                    type=openapi.TYPE_OBJECT,
+                    properties={
+                        "detail": openapi.Schema(type=openapi.TYPE_STRING)
+                    }
+                )
+            ),
+            400: "Email required",
+            404: "User not found"
+        },
+        tags=["Authentication"]
     )
     def post(self, request):
         email = request.data.get("email")
@@ -199,12 +224,32 @@ class VerifyEmailView(APIView):
     permission_classes = [permissions.AllowAny]
 
     @swagger_auto_schema(
+        operation_id="auth_verify_email",
         operation_summary="Verify user email via token",
+        operation_description="Verify user email address using token from verification email.",
+        manual_parameters=[
+            openapi.Parameter(
+                "token",
+                openapi.IN_QUERY,
+                description="Email verification token",
+                type=openapi.TYPE_STRING,
+                required=True
+            )
+        ],
         responses={
-            200: "Email verified",
+            200: openapi.Response(
+                description="Email verified",
+                schema=openapi.Schema(
+                    type=openapi.TYPE_OBJECT,
+                    properties={
+                        "detail": openapi.Schema(type=openapi.TYPE_STRING)
+                    }
+                )
+            ),
             400: "Invalid token",
-            404: "User not found",
-        }
+            404: "User not found"
+        },
+        tags=["Authentication"]
     )
     def get(self, request):
         token = request.query_params.get("token")
@@ -237,18 +282,27 @@ class ForgotPasswordView(APIView):
     permission_classes = [AllowAny]
 
     @swagger_auto_schema(
-        # method="post",
-        operation_description="Request a password reset email.",
+        operation_id="auth_forgot_password",
+        operation_summary="Request password reset email",
+        operation_description="Request a password reset email. Rate limited per email address and IP.",
         request_body=ForgotPasswordSerializer,
         responses={
-            200: openapi.Response("Success", schema=openapi.Schema(
-                type=openapi.TYPE_OBJECT,
-                properties={
-                    "detail": openapi.Schema(type=openapi.TYPE_STRING)
-                }
-            )),
-            429: "Too many requests",
+            200: openapi.Response(
+                description="Password reset email sent (if account exists)",
+                schema=openapi.Schema(
+                    type=openapi.TYPE_OBJECT,
+                    properties={
+                        "detail": openapi.Schema(
+                            type=openapi.TYPE_STRING,
+                            description="Generic success message for security"
+                        )
+                    }
+                )
+            ),
+            400: "Validation error",
+            429: "Too many requests - rate limited"
         },
+        tags=["Authentication"]
     )
     def post(self, request):
         serializer = ForgotPasswordSerializer(data=request.data)
@@ -309,13 +363,27 @@ class ResetPasswordView(APIView):
     permission_classes = [AllowAny]
 
     @swagger_auto_schema(
-        # method="post",
-        operation_description="Use a valid password reset token to set a new password.",
+        operation_id="auth_reset_password",
+        operation_summary="Reset password with token",
+        operation_description="Use a valid password reset token to set a new password. Blacklists all existing user tokens.",
         request_body=ResetPasswordSerializer,
         responses={
-            200: "Password reset successful",
+            200: openapi.Response(
+                description="Password reset successful",
+                schema=openapi.Schema(
+                    type=openapi.TYPE_OBJECT,
+                    properties={
+                        "detail": openapi.Schema(
+                            type=openapi.TYPE_STRING,
+                            description="Success message"
+                        )
+                    }
+                )
+            ),
             400: "Invalid or expired token",
+            404: "User not found"
         },
+        tags=["Authentication"]
     )
     def post(self, request):
         serializer = ResetPasswordSerializer(data=request.data)

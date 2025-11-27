@@ -209,6 +209,7 @@ SWAGGER_SETTINGS = {
             "type": "apiKey",
             "in": "cookie",
             "name": "access_token",
+            "description": "JWT access token stored in HttpOnly cookie"
         }
     }
 }
