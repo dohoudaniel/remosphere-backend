@@ -35,5 +35,6 @@ EXPOSE 8000
 ENV PYTHONUNBUFFERED=1
 ENV DJANGO_SETTINGS_MODULE=remosphere.settings
 ENV STATIC_ROOT=/app/staticfiles
+RUN python manage.py collectstatic --noinput
 
 CMD ["/bin/sh", "-c", "python manage.py migrate --noinput && python manage.py collectstatic --noinput && gunicorn remosphere.wsgi:application --bind 0.0.0.0:8000 --workers 2 --threads 2 --log-level info"]
