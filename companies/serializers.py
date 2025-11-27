@@ -3,6 +3,9 @@ from .models import Company
 
 
 class CompanySerializer(serializers.ModelSerializer):
+    """
+    The Serializer class for Company
+    """
     class Meta:
         model = Company
         fields = [

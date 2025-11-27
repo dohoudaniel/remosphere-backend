@@ -6,14 +6,24 @@ User = get_user_model()
 
 
 class ForgotPasswordSerializer(serializers.Serializer):
+    """
+    Forgot Password Serializer
+    """
     email = serializers.EmailField()
 
 
 class ResetPasswordSerializer(serializers.Serializer):
+    """
+    Password Reset Serializer
+    """
     token = serializers.CharField()
     new_password = serializers.CharField(write_only=True)
 
     def validate_new_password(self, value):
+        """
+        Validating new passworrd using
+        password strength equirements
+        """
         # run Django's password validators and return helpful errors
         try:
             password_validation.validate_password(value)

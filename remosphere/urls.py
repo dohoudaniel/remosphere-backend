@@ -19,13 +19,15 @@ from django.urls import path, re_path, include
 from rest_framework import permissions
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
-from rest_framework_simplejwt.views import TokenRefreshView, TokenVerifyView
+# from rest_framework_simplejwt.views import TokenRefreshView, TokenVerifyView
+from .views import api_root
 
+# Swagger UI Documentation
 schema_view = get_schema_view(
     openapi.Info(
-        title="RemoSphere: Job Board API Docs",
+        title="RemoSphere: Job Board (API Docs)",
         default_version='v1',
-        description="API documentation for RemoSphere",
+        description="API documentation for RemoSphere's Backend. See Frontend here: https://remosphere.vercel.app",
         contact=openapi.Contact(email="dohoudanielfavour@gmail.com"),
     ),
     public=True,
@@ -33,6 +35,7 @@ schema_view = get_schema_view(
 )
 
 urlpatterns = [
+    # The Admin page
     path('admin/', admin.site.urls),
 
     # Swagger UI
@@ -89,8 +92,7 @@ urlpatterns = [
 
     # The Applications for user application
     path("api/", include("applications.urls")),
-
-
-    # path("api/token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
-    # path("api/token/verify/", TokenVerifyView.as_view(), name="token_verify"),
+    
+    # The Home route
+    path("", api_root, name='api-root'),
 ]

@@ -18,7 +18,8 @@ class ApplicationCreateSerializer(serializers.ModelSerializer):
         super().__init__(*args, **kwargs)
         # avoid circular import at module load
         # from jobs.models import Job
-        self.fields["job"].queryset = Job.objects.filter(is_active=True)  # Job.objects.all()
+        self.fields["job"].queryset = Job.objects.filter(
+            is_active=True)  # Job.objects.all()
 
     def validate(self, attrs):
         user = self.context["request"].user
@@ -29,11 +30,13 @@ class ApplicationCreateSerializer(serializers.ModelSerializer):
 
         # optionally: disallow applying if job is inactive
         if not job.is_active:
-            raise serializers.ValidationError("Cannot apply to an inactive job.")
+            raise serializers.ValidationError(
+                "Cannot apply to an inactive job.")
 
         # check existing application
         if Application.objects.filter(job=job, user=user).exists():
-            raise serializers.ValidationError("You have already applied for this job.")
+            raise serializers.ValidationError(
+                "You have already applied for this job.")
 
         return attrs
 

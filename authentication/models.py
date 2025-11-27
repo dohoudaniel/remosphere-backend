@@ -8,6 +8,9 @@ User = get_user_model()
 
 @receiver(pre_save, sender=User)
 def track_verification_before_save(sender, instance, **kwargs):
+    """
+    Authentication model for sent emails
+    """
     if instance.pk:
         old = User.objects.filter(pk=instance.pk).first()
         instance._previous_is_verified = old.email_verified if old else False

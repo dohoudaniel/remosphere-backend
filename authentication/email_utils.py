@@ -62,14 +62,19 @@ def send_welcome_email(self, email, first_name=None):
     if first_name:
         message = (
             f"Hi {first_name},\n\n"
-            "Your email has been successfully verified. Welcome to RemoSphere!\n\n"
+            "Your email has been successfully verified. 🎉\n"
+            "You can now login to access all of our features!\n"
+            "Welcome to RemoSphere!\n\n"
             "Cheers,\nThe RemoSphere Team"
         )
     else:
         message = (
             "Hi,\n\n"
-            "Your email has been successfully verified. Welcome to RemoSphere!\n\n"
-            "Cheers,\nThe RemoSphere Team")
+            "Your email has been successfully verified. 🎉\n"
+            "You can now login to access all of our features!\n"
+            "Welcome to RemoSphere!\n\n"
+            "Cheers,\nThe RemoSphere Team"
+        )
 
     try:
         logger.info("send_welcome_email: sending to %s", email)
@@ -90,7 +95,9 @@ def send_welcome_email(self, email, first_name=None):
 
 
 def make_password_reset_token(user_id):
-    """Create a short-lived JWT for password reset."""
+    """
+    Create a short-lived JWT for password reset.
+    """
     now = datetime.utcnow()
     exp = now + timedelta(minutes=getattr(settings,
                           "PASSWORD_RESET_TOKEN_LIFETIME_MINUTES", 30))
@@ -110,7 +117,8 @@ def make_password_reset_token(user_id):
 
 def verify_password_reset_token(token):
     """
-    Return user_id if token valid, else None. Raises descriptive errors as needed.
+    Return user_id if token valid, else None.
+    Raises descriptive errors as needed.
     """
     try:
         payload = jwt.decode(

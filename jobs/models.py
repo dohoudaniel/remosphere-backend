@@ -4,6 +4,9 @@ from django.utils.text import slugify
 
 
 class Job(models.Model):
+    """
+    The Job postings model
+    """
     JOB_TYPE_FULL_TIME = "full_time"
     JOB_TYPE_PART_TIME = "part_time"
     JOB_TYPE_CONTRACT = "contract"

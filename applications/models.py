@@ -4,6 +4,9 @@ from django.utils import timezone
 
 
 class Application(models.Model):
+    """
+    The Jobs Application Model
+    """
     STATUS_APPLIED = "applied"
     STATUS_SHORTLISTED = "shortlisted"
     STATUS_REJECTED = "rejected"
@@ -29,7 +32,10 @@ class Application(models.Model):
         related_name="applications",
     )
     resume_url = models.URLField(blank=True, null=True)
-    status = models.CharField(max_length=32, choices=STATUS_CHOICES, default=STATUS_PENDING)
+    status = models.CharField(
+        max_length=32,
+        choices=STATUS_CHOICES,
+        default=STATUS_PENDING)
     applied_at = models.DateTimeField(default=timezone.now)
 
     class Meta:

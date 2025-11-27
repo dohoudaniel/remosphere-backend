@@ -20,6 +20,9 @@ User = get_user_model()
 
 
 def set_jwt_cookies(response, access_token, refresh_token):
+    """
+    Setting JWT Tokens to app settings on user login.
+    """
     cookie_opts = {
         "httponly": getattr(settings, "JWT_COOKIE_HTTPONLY", True),
         "secure": getattr(settings, "JWT_COOKIE_SECURE", False),
@@ -40,6 +43,9 @@ def set_jwt_cookies(response, access_token, refresh_token):
 
 
 class LoginView(APIView):
+    """
+    The User Login View
+    """
     permission_classes = [permissions.AllowAny]
 
     @swagger_auto_schema(
@@ -85,6 +91,9 @@ class LoginView(APIView):
 
 
 class CookieTokenRefreshView(APIView):
+    """
+    Cookie Token Refresh
+    """
     permission_classes = [permissions.AllowAny]
 
     @swagger_auto_schema(
@@ -128,6 +137,11 @@ class CookieTokenRefreshView(APIView):
 
 
 class LogoutView(APIView):
+    """
+    User Logout Functionality,
+    and blacklisting of
+    assigned Cookies as tokens
+    """
     permission_classes = [permissions.IsAuthenticated]
 
     @swagger_auto_schema(
@@ -161,6 +175,11 @@ class LogoutView(APIView):
 
 
 class RequestVerificationView(APIView):
+    """
+    Requesting User Verification through emails.
+
+    Upon request, an email (celery scheduled) is sent
+    """
     permission_classes = [permissions.AllowAny]
 
     @swagger_auto_schema(
@@ -189,6 +208,9 @@ class RequestVerificationView(APIView):
 
 
 class VerifyEmailView(APIView):
+    """
+    Sending Verification emails to new users, or unverified users.
+    """
     permission_classes = [permissions.AllowAny]
 
     @swagger_auto_schema(
@@ -227,11 +249,14 @@ def _rate_limit_key_ip(ip):
 
 
 class ForgotPasswordView(APIView):
+    """
+    Forgot Password Functionality
+    """
     permission_classes = [AllowAny]
 
     @swagger_auto_schema(
         # method="post",
-        operation_description="Request a password reset email.",
+        operation_summary="Request a password reset email.",
         request_body=ForgotPasswordSerializer,
         responses={
             200: openapi.Response("Success", schema=openapi.Schema(
@@ -298,11 +323,14 @@ class ForgotPasswordView(APIView):
 
 
 class ResetPasswordView(APIView):
+    """
+    The Reset Password functionality
+    """
     permission_classes = [AllowAny]
 
     @swagger_auto_schema(
         # method="post",
-        operation_description="Use a valid password reset token to set a new password.",
+        operation_summary="Use a valid password reset token to set a new password.",
         request_body=ResetPasswordSerializer,
         responses={
             200: "Password reset successful",

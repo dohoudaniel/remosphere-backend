@@ -11,6 +11,11 @@ User = get_user_model()
 
 @receiver(post_save, sender=User)
 def send_welcome_on_verification(sender, instance, created, **kwargs):
+    """
+    A Celery scheduled task.
+    Sends a welcome email to new users
+    as soon as their email gets verified.
+    """
     # Trigger welcome when user toggles from unverified -> verified
     if not created:
         prev = getattr(instance, "_previous_is_verified", False)

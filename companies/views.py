@@ -8,6 +8,8 @@ from users.permissions import IsAdminOrReadOnly
 
 class CompanyViewSet(viewsets.ModelViewSet):
     """
+    Company Management and Tracking for posted jobs
+
     Admin → Full CRUD
     Authenticated Users → Read-only
     """

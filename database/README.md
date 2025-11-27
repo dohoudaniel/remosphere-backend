@@ -1,0 +1,1 @@
+This directory contains fundamental database design implementations for RemoSphere's Backend functionality

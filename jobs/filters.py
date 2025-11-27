@@ -3,6 +3,16 @@ from .models import Job
 
 
 class JobFilter(django_filters.FilterSet):
+    """
+    The search and filtering functionality for jobs by:
+
+    - location
+    - job type
+    - category
+    - activeness
+    - company name
+    - a search string
+    """
     category_name = django_filters.CharFilter(
         field_name="category__name",
         lookup_expr="icontains"

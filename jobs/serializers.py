@@ -5,6 +5,9 @@ from companies.models import Company
 
 
 class JobSerializer(serializers.ModelSerializer):
+    """
+    The Serializer for Job Postings.
+    """
     created_by = serializers.CharField(
         source="created_by.email", read_only=True
     )

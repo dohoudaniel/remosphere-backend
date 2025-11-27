@@ -13,6 +13,9 @@ from rest_framework_simplejwt.tokens import RefreshToken
 
 
 class RegisterView(generics.CreateAPIView):
+    """
+    The User Sign Up View
+    """
     serializer_class = RegisterSerializer
     permission_classes = [AllowAny]
 
@@ -53,6 +56,9 @@ class RegisterView(generics.CreateAPIView):
 
 
 class RequestVerificationEmailView(APIView):
+    """
+    Requesting Verification as a User
+    """
     permission_classes = [AllowAny]
 
     def post(self, request):
@@ -76,6 +82,9 @@ class RequestVerificationEmailView(APIView):
 
 
 class LoginView(generics.GenericAPIView):
+    """
+    The User Login view
+    """
     serializer_class = LoginSerializer
     permission_classes = [AllowAny]
 
@@ -140,6 +149,10 @@ class LoginView(generics.GenericAPIView):
 
 
 class VerifyEmailView(APIView):
+    """
+    The functionality to verify user's email
+by sending a verification email to them.
+    """
     permission_classes = [AllowAny]
 
     def get(self, request, token):
@@ -170,6 +183,11 @@ class VerifyEmailView(APIView):
 
 
 class LogoutView(APIView):
+    """
+    The User Logout functionality.
+    It blacklists existing cookies, and
+    signs out the user.
+    """
     permission_classes = [IsAuthenticated]
 
     def post(self, request):

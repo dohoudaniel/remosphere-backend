@@ -7,10 +7,15 @@ from users.models import User
 
 class CookieJWTAuthentication(BaseAuthentication):
     """
+    Cookie Authentication for User Login
+    on Swagger and through API Endpoints
     """
 
     def authenticate(self, request):
         """
+        Authenticating for cookies,
+        and using cookie auth instead of the
+        native JWT input in Swagger
         """
         access_token = request.COOKIES.get("access_token")
 

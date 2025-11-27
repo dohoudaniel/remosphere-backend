@@ -4,6 +4,10 @@ from .models import User
 
 
 class UserAdmin(BaseUserAdmin):
+    """
+    Custom User Admin for User
+    Authentication and Authorization
+    """
     model = User
 
     list_display = (

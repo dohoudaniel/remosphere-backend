@@ -3,6 +3,9 @@ from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, Permis
 
 
 class UserManager(BaseUserManager):
+    """
+    The Admin Model (Superuser)
+    """
     def create_user(
             self,
             email,
@@ -45,6 +48,9 @@ class UserManager(BaseUserManager):
 
 
 class User(AbstractBaseUser, PermissionsMixin):
+    """
+    A Normal User
+    """
     email = models.EmailField(unique=True, db_index=True)
     # username = models.CharField(max_length=50, unique=True)  #
     # firstname+lastname

@@ -12,6 +12,10 @@ from django.db.models import Count
 
 
 class JobViewSet(viewsets.ModelViewSet):
+    """
+    The Job view responsible for the
+    searching and filtering of jobs.
+    """
     # .order_by("-created_at")  # .select_related("category", "company", "created_by")
     queryset = Job.objects.all()
     serializer_class = JobSerializer
@@ -56,7 +60,6 @@ class JobViewSet(viewsets.ModelViewSet):
             qs = qs.filter(is_active=True)
         return qs
 
-
     def get_serializer(self, *args, **kwargs):
         ser = super().get_serializer(*args, **kwargs)
         # set category queryset dynamically to avoid circular import issues
@@ -69,6 +72,3 @@ class JobViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(created_by=self.request.user)
-
-
-
