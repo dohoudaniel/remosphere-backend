@@ -6,9 +6,7 @@ class UserManager(BaseUserManager):
         if not email:
             raise ValueError("Email must be set")
         email = self.normalize_email(email)
-        # combined = first_name + last_name
-        # username = combined.lower()  # auto-generate username
-        # username = f"{first_name}{last_name}".lower()  # auto-generate username
+
         user = self.model(
             email=email,
             first_name=first_name,
@@ -60,4 +58,3 @@ class User(AbstractBaseUser, PermissionsMixin):
             self._previous_is_verified = False
 
         super().save(*args, **kwargs)
-

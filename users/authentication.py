@@ -33,4 +33,3 @@ class CookieOrHeaderJWTAuthentication(JWTAuthentication):
             return (user, validated)
         except Exception as e:
             raise exceptions.AuthenticationFailed("Invalid token from cookie") from e
-

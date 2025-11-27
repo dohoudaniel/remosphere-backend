@@ -12,7 +12,7 @@ from users.permissions import IsAdminOrReadOnly
 class JobViewSet(viewsets.ModelViewSet):
     queryset = Job.objects.all().select_related("category", "company", "created_by")
     serializer_class = JobSerializer
-    permission_classes = [IsAdminOrReadOnly] # [IsAuthenticated]
+    permission_classes = [IsAdminOrReadOnly]  # [IsAuthenticated]
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     filterset_fields = ["location", "category"]
     search_fields = ["title", "description", "company_name", "location"]

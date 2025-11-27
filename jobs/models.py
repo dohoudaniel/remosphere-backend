@@ -1,9 +1,6 @@
 from django.conf import settings
 from django.db import models
 from django.utils.text import slugify
-from django.utils import timezone
-import random
-
 
 class Job(models.Model):
     JOB_TYPE_FULL_TIME = "full_time"
@@ -67,19 +64,3 @@ class Job(models.Model):
 
     def __str__(self):
         return f"{self.title} @ {self.company_name}"
-
-    # def save(self, *args, **kwargs):
-    #     # auto-generate slug if not provided
-    #     if not self.slug:
-    #         base = slugify(self.title)[:200] or "job"
-    #         slug = base
-    #         # avoid accidental collisions
-    #         while Job.objects.filter(slug=slug).exclude(pk=self.pk).exists():
-    #             slug = f"{base}-{random.randint(1000, 9999)}"
-    #         self.slug = slug
-
-    #     # optional auto-deactivate when expiry passed (does not auto-save DB changes)
-    #     if self.expiry_at and self.expiry_at <= timezone.now():
-    #         self.is_active = False
-
-    #     super().save(*args, **kwargs)
