@@ -203,7 +203,9 @@ class RequestVerificationView(APIView):
         except User.DoesNotExist:
             return Response({"detail": "No user with that email"}, status=404)
 
-        send_verification_email(user, request=request)
+        domain = request.build_absolute_uri("/").rstrip("/")
+
+        send_verification_email(user.id, domain)
         return Response({"detail": "Verification email sent"}, status=200)
 
 
