@@ -1,3 +1,11 @@
+"""Email utility helpers for verification and password reset flows.
+
+This module provides token creation/verification helpers and Celery
+tasks that send verification, welcome and password reset emails.
+Only descriptive docstrings and comments are added; no behavior
+is changed.
+"""
+
 from django.core.signing import TimestampSigner, BadSignature, SignatureExpired
 from django.conf import settings
 from django.urls import reverse
@@ -21,7 +29,9 @@ def make_verification_token(email):
     return signer.sign(email)
 
 
-def verify_verification_token(token, max_age=60 * 60 * 24):  # 1 day
+def verify_verification_token(token, max_age=60 * 60 * 24):
+    """
+    """
     try:
         email = signer.unsign(token, max_age=max_age)
         return email
@@ -32,7 +42,9 @@ def verify_verification_token(token, max_age=60 * 60 * 24):  # 1 day
 
 
 @shared_task  # (bind=True, max_retries=5)
-def send_verification_email(user_id, domain):  # (user_id, request=None):
+def send_verification_email(user_id, domain):
+    """
+    """
     try:
         user = User.objects.get(id=user_id)
     except User.DoesNotExist:
@@ -90,10 +102,12 @@ def send_welcome_email(self, email, first_name=None):
 
 
 def make_password_reset_token(user_id):
-    """Create a short-lived JWT for password reset."""
+    """
+    Create a short-lived JWT for password reset.
+    """
     now = datetime.utcnow()
     exp = now + timedelta(minutes=getattr(settings,
-                          "PASSWORD_RESET_TOKEN_LIFETIME_MINUTES", 30))
+                        "PASSWORD_RESET_TOKEN_LIFETIME_MINUTES", 30))
     payload = {
         "sub": int(user_id),
         "type": "password_reset",
@@ -110,7 +124,8 @@ def make_password_reset_token(user_id):
 
 def verify_password_reset_token(token):
     """
-    Return user_id if token valid, else None. Raises descriptive errors as needed.
+    Return user_id if token valid, else None.
+    Raises descriptive errors as needed.
     """
     try:
         payload = jwt.decode(

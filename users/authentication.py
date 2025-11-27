@@ -1,4 +1,10 @@
-# users/authentication.py
+"""
+Custom authentication utilities for the `users` app.
+
+Provides a JWT authentication backend that falls back to reading
+access tokens from cookies when the Authorization header is absent.
+"""
+
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework import exceptions
 from django.conf import settings

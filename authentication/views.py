@@ -1,3 +1,10 @@
+"""Authentication-related API views and helpers.
+
+Endpoints include login, logout, token refresh, email verification and
+password reset flows. This module's edits are limited to documentation
+only and do not alter runtime behavior.
+"""
+
 from django.conf import settings
 from rest_framework import status, permissions
 from rest_framework.views import APIView

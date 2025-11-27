@@ -11,3 +11,4 @@ venv
 logs
 .env.development.*
 */trash/*
+__pycache__

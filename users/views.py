@@ -1,3 +1,11 @@
+"""
+User-facing API views.
+
+This module exposes registration, login, email verification and
+logout endpoints used by the frontend. Only documentation strings
+and inline comments are added here — no behavioral changes.
+"""
+
 from rest_framework import generics, status
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
@@ -15,6 +23,12 @@ from rest_framework_simplejwt.tokens import RefreshToken
 class RegisterView(generics.CreateAPIView):
     serializer_class = RegisterSerializer
     permission_classes = [AllowAny]
+    """
+    Handle user registration requests.
+
+    The `post` method validates input and creates a user record,
+    then queues an email verification task via Celery.
+    """
 
     @swagger_auto_schema(
         operation_summary="Register a new user",
@@ -54,6 +68,9 @@ class RegisterView(generics.CreateAPIView):
 
 class RequestVerificationEmailView(APIView):
     permission_classes = [AllowAny]
+    """
+    Endpoint to request resending of verification emails.
+    """
 
     def post(self, request):
         user = request.user if request.user.is_authenticated else None
@@ -78,6 +95,10 @@ class RequestVerificationEmailView(APIView):
 class LoginView(generics.GenericAPIView):
     serializer_class = LoginSerializer
     permission_classes = [AllowAny]
+    """
+    Authenticate user credentials and
+    return tokens + set cookies.
+    """
 
     @swagger_auto_schema(
         operation_summary="Login and receive access + refresh tokens",
@@ -141,6 +162,9 @@ class LoginView(generics.GenericAPIView):
 
 class VerifyEmailView(APIView):
     permission_classes = [AllowAny]
+    """
+    Verify an email address using a token provided in the URL.
+    """
 
     def get(self, request, token):
         user = verify_token(token)  # You already have this func
@@ -171,6 +195,11 @@ class VerifyEmailView(APIView):
 
 class LogoutView(APIView):
     permission_classes = [IsAuthenticated]
+
+    """
+    Logout endpoint that blacklists
+    refresh tokens and clears cookies.
+    """
 
     def post(self, request):
         refresh_token = request.COOKIES.get("refresh_token")

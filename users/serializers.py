@@ -1,3 +1,10 @@
+"""Serializers for user-related API interactions.
+
+This module contains DRF serializers used for user registration,
+login and profile serialization. Only explanatory docstrings are
+added — no logic changes.
+"""
+
 from rest_framework import serializers
 from django.contrib.auth import authenticate
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -7,6 +14,7 @@ from django.contrib.auth.password_validation import validate_password
 
 
 class UserSerializer(serializers.ModelSerializer):
+    """Serialize basic user profile fields for API responses."""
     class Meta:
         model = User
         fields = [
@@ -26,6 +34,12 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class RegisterSerializer(serializers.ModelSerializer):
+    """
+    Serializer used for creating new users.
+
+    Validates password strength using Django validators and creates
+    a user via `User.objects.create_user`.
+    """
     password = serializers.CharField(write_only=True)
     email = serializers.EmailField()
 
@@ -56,6 +70,13 @@ class RegisterSerializer(serializers.ModelSerializer):
 
 
 class LoginSerializer(serializers.Serializer):
+    """
+    Authenticate credentials and return JWT tokens.
+
+    On successful validation, `self.context['user']` is populated with
+    the authenticated user instance and the returned dict contains
+    `access` and `refresh` token strings.
+    """
     email = serializers.EmailField()
     password = serializers.CharField(write_only=True)
     access = serializers.CharField(read_only=True)

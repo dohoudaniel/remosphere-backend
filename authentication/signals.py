@@ -1,3 +1,9 @@
+"""Signal handlers related to user lifecycle events.
+
+The primary handler in this module fires a welcome-email Celery
+task when a user's `email_verified` flag transitions from False to True.
+"""
+
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.contrib.auth import get_user_model
@@ -11,6 +17,12 @@ User = get_user_model()
 
 @receiver(post_save, sender=User)
 def send_welcome_on_verification(sender, instance, created, **kwargs):
+    """
+    Send a welcome email asynchronously when a user verifies email.
+
+    Only triggers when the saved instance is not newly created and the
+    verification state changed from False to True.
+    """
     # Trigger welcome when user toggles from unverified -> verified
     if not created:
         prev = getattr(instance, "_previous_is_verified", False)

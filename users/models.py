@@ -1,8 +1,19 @@
+"""Users models.
+
+Contains the custom `User` model and `UserManager`.
+These docstrings and inline comments are non-functional and
+are intended to improve code readability for contributors.
+"""
+
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 
 
 class UserManager(BaseUserManager):
+    """Manager for `User` model that provides user creation helpers.
+
+    This mirrors Django's recommended pattern for custom user models.
+    """
     def create_user(
             self,
             email,
@@ -10,6 +21,11 @@ class UserManager(BaseUserManager):
             last_name,
             password=None,
             **extra_fields):
+        """Create and return a `User` with the given email and names.
+
+        Raises:
+            ValueError: If `email` is not provided.
+        """
         if not email:
             raise ValueError("Email must be set")
         email = self.normalize_email(email)
@@ -32,6 +48,10 @@ class UserManager(BaseUserManager):
             last_name,
             password=None,
             **extra_fields):
+        """Create and return a superuser (admin role).
+
+        Ensures `is_admin` and `role` defaults are set.
+        """
         extra_fields.setdefault("is_admin", True)
         extra_fields.setdefault("role", "admin")
         # Accept username to avoid TypeError
@@ -45,6 +65,11 @@ class UserManager(BaseUserManager):
 
 
 class User(AbstractBaseUser, PermissionsMixin):
+    """
+    Custom user model using email for authentication.
+
+    Attributes reflect profile information and verification state.
+    """
     email = models.EmailField(unique=True, db_index=True)
     # username = models.CharField(max_length=50, unique=True)  #
     # firstname+lastname
@@ -67,6 +92,9 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     @property
     def username(self):
+        """
+        Combine first and last name for display purposes.
+        """
         return f"{self.first_name} {self.last_name}"
 
     def save(self, *args, **kwargs):
