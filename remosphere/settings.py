@@ -265,6 +265,7 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:8000",
     "http://localhost:3000",
     "https://remosphere.vercel.app",
+    "https://remosphere.onrender.com",
 ]
 CSRF_COOKIE_HTTPONLY = False  # Swagger needs this
 SESSION_COOKIE_SECURE = JWT_COOKIE_SECURE
