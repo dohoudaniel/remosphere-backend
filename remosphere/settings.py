@@ -269,4 +269,5 @@ CSRF_TRUSTED_ORIGINS = [
     "https://remosphere.onrender.com",
     "http://localhost:3000",
     "http://localhost:8080",
+    "https://remosphere.vercel.app",
 ]
