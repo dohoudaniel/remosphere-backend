@@ -217,3 +217,23 @@ class LogoutView(APIView):
         response.delete_cookie("refresh_token")
 
         return response
+
+
+class CurrentUserView(APIView):
+    """
+    Get the current authenticated user's details
+    """
+    permission_classes = [IsAuthenticated]
+
+    @swagger_auto_schema(
+        operation_summary="Get current user details",
+        responses={
+            200: openapi.Response(
+                description="Current user details",
+                schema=UserSerializer
+            )
+        }
+    )
+    def get(self, request):
+        serializer = UserSerializer(request.user)
+        return Response(serializer.data, status=status.HTTP_200_OK)
