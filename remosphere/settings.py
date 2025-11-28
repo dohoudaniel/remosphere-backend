@@ -70,9 +70,11 @@ INSTALLED_APPS = [
     'authentication.apps.AuthenticationConfig',
     'anymail',
     'django_filters',
+    "corsheaders",
 ]
 
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",
     'django.middleware.security.SecurityMiddleware',
     "whitenoise.middleware.WhiteNoiseMiddleware",
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -266,4 +268,5 @@ CSRF_TRUSTED_ORIGINS = [
     "http://localhost:8000",
     "https://remosphere.onrender.com",
     "http://localhost:3000",
+    "http://localhost:8080",
 ]
