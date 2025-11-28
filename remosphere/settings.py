@@ -11,11 +11,14 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path
-import os, environ
+import os
+import environ
+from datetime import timedelta
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
 
 # Setting up environment
 env = environ.Env()
@@ -42,6 +45,8 @@ DEBUG = env.bool("DEBUG_MODE", default=True)
 
 ALLOWED_HOSTS = env.list("ALLOWED_HOSTS")
 
+SITE_URL = env("SITE_URL")
+
 
 # Application definition
 
@@ -59,10 +64,19 @@ INSTALLED_APPS = [
     'companies',
     'rest_framework',
     'drf_yasg',
+    'rest_framework_simplejwt',
+    'rest_framework_simplejwt.token_blacklist',
+    # 'authentication',
+    'authentication.apps.AuthenticationConfig',
+    'anymail',
+    'django_filters',
+    "corsheaders",
 ]
 
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",
     'django.middleware.security.SecurityMiddleware',
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -122,6 +136,9 @@ AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
+    {
+        "NAME": "users.validators.StrongPasswordValidator"
+    },
 ]
 
 
@@ -140,9 +157,124 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Authentication
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": (
+        "authentication.cookie_auth.CookieJWTAuthentication",
+
+        # fallback to header-only JWT
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
+    ),
+    "DEFAULT_PERMISSION_CLASSES": (
+        "rest_framework.permissions.IsAuthenticated",
+    ),
+    "DEFAULT_FILTER_BACKENDS": [
+        "django_filters.rest_framework.DjangoFilterBackend"
+    ],
+}
+
+AUTH_USER_MODEL = 'users.User'
+
+# Cookie settings (for cookies created by our login/refresh endpoints)
+JWT_COOKIE_NAME = "refresh_token"        # refresh stored HttpOnly cookie
+JWT_ACCESS_COOKIE_NAME = "access_token"  # access cookie
+# set to True in production (HTTPS)
+JWT_COOKIE_SECURE = env("JWT_COOKIE_SECURE")
+JWT_COOKIE_SAMESITE = "Lax"  # or "Strict"
+JWT_COOKIE_HTTPONLY = True
+
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=60),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
+    "ROTATE_REFRESH_TOKENS": True,
+    "BLACKLIST_AFTER_ROTATION": True,
+    "ALGORITHM": "HS256",
+    "SIGNING_KEY": SECRET_KEY,
+    "AUTH_HEADER_TYPES": ("Bearer",),
+    "AUTH_COOKIE": "access_token",
+    "AUTH_COOKIE_REFRESH": "refresh_token",
+    "AUTH_COOKIE_HTTP_ONLY": True,
+    "AUTH_COOKIE_SECURE": JWT_COOKIE_SECURE,
+    "AUTH_COOKIE_SAMESITE": "Lax",
+}
+
+
+SWAGGER_SETTINGS = {
+    "SECURITY_DEFINITIONS": {
+        "cookieAuth": {
+            "type": "apiKey",
+            "in": "cookie",
+            "name": "access_token",
+        }
+    },
+    # "USE_SESSION_AUTH": False,
+    # "LOGIN_REQUIRED": False,
+}
+
+EMAIL_BACKEND = env("EMAIL_BACKEND")
+EMAIL_HOST = env("EMAIL_HOST")
+EMAIL_PORT = env("EMAIL_PORT")
+EMAIL_USE_TLS = env("EMAIL_USE_TLS")
+EMAIL_HOST_USER = env("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD")
+DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL")
+
+ANYMAIL = {
+    "BREVO_API_KEY": env("BREVO_API_KEY"),
+}
+
+CELERY_BROKER_URL = env("CELERY_BROKER_URL")
+
+# Password reset token lifetime (minutes)
+PASSWORD_RESET_TOKEN_LIFETIME_MINUTES = env.int(
+    "PASSWORD_RESET_TOKEN_LIFETIME_MINUTES", 30)
+
+# Rate limiting for password-reset requests
+PASSWORD_RESET_RATE_LIMIT_PER_HOUR = env.int(
+    "PASSWORD_RESET_RATE_LIMIT_PER_HOUR", 5)
+PASSWORD_RESET_RATE_LIMIT_IP_PER_HOUR = env.int(
+    "PASSWORD_RESET_RATE_LIMIT_IP_PER_HOUR", 20)
+
+# secret for signing password-reset JWTs (you can reuse SECRET_KEY or use
+# another env var)
+PASSWORD_RESET_SIGNING_KEY = env(
+    "PASSWORD_RESET_SIGNING_KEY",
+    default=SECRET_KEY)
+PASSWORD_RESET_ALGORITHM = "HS256"
+
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.redis.RedisCache",
+        "LOCATION": env("CELERY_BROKER_URL"),
+    }
+}
+
+CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:8080",
+    "http://localhost:8000",
+    "http://localhost:3000",
+    "https://remosphere.vercel.app",
+    "https://remosphere.onrender.com",
+]
+CSRF_COOKIE_HTTPONLY = False  # Swagger needs this
+SESSION_COOKIE_SECURE = JWT_COOKIE_SECURE
+CSRF_COOKIE_SECURE = JWT_COOKIE_SECURE
+CSRF_TRUSTED_ORIGINS = [
+    "http://127.0.0.1:8000",
+    "http://localhost:8000",
+    "https://remosphere.onrender.com",
+    "http://localhost:3000",
+    "http://localhost:8080",
+    "https://remosphere.vercel.app",
+]

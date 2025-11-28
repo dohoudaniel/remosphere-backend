@@ -8,3 +8,8 @@ venv
 .env.production
 *.sqlite3
 */*/__pycache__
+logs
+.env.development.*
+*/trash/*
+__pycache__
+tests

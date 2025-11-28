@@ -1,0 +1,26 @@
+[
+  {
+    "title": "Senior Backend Engineer",
+    "description": "Work with Django, DRF, and microservices.",
+    "category": "Software Engineering",
+    "location": "Remote",
+    "job_type": "full_time",
+    "salary_range": "$4000 - $6000",
+    "company_name": "TechNova",
+    "company": "TechNova",
+    "created_by_email": "admin@example.com",
+    "is_active": true
+  },
+  {
+    "title": "Product Designer",
+    "description": "Create dashboards, prototypes, and UI flows.",
+    "category": "Design",
+    "location": "Lagos",
+    "job_type": "remote",
+    "salary_range": "$2000 - $3500",
+    "company_name": "Designify",
+    "company": "Designify",
+    "created_by_email": null,
+    "is_active": true
+  }
+]

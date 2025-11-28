@@ -1,0 +1,18 @@
+from rest_framework import serializers
+from .models import Company
+
+
+class CompanySerializer(serializers.ModelSerializer):
+    """
+    The Serializer class for Company
+    """
+    class Meta:
+        model = Company
+        fields = [
+            "id",
+            "name",
+            "description",
+            "website",
+            "created_at",
+        ]
+        read_only_fields = ["id", "created_at"]
