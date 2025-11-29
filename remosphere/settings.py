@@ -46,6 +46,8 @@ DEBUG = env.bool("DEBUG_MODE", default=True)
 ALLOWED_HOSTS = env.list("ALLOWED_HOSTS")
 
 SITE_URL = env("SITE_URL")
+# Frontend URL for email verification redirects
+FRONTEND_URL = env("FRONTEND_URL", default="http://localhost:8080")
 
 
 # Application definition
