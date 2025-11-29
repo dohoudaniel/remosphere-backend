@@ -211,35 +211,92 @@ class RequestVerificationView(APIView):
 
 class VerifyEmailView(APIView):
     """
-    Sending Verification emails to new users, or unverified users.
+    Verify user email via token.
+    
+    Supports two modes:
+    1. JSON mode (default for API/Swagger): Returns JSON response
+    2. Redirect mode (for browsers/frontend): Redirects to frontend with status
+    
+    Use ?redirect=true to force redirect mode, otherwise defaults to JSON
     """
     permission_classes = [permissions.AllowAny]
 
     @swagger_auto_schema(
         operation_summary="Verify user email via token",
+        manual_parameters=[
+            openapi.Parameter(
+                'redirect',
+                openapi.IN_QUERY,
+                description="Set to 'true' to redirect to frontend instead of returning JSON",
+                type=openapi.TYPE_STRING,
+                enum=['true', 'false']
+            ),
+        ],
         responses={
-            200: "Email verified",
-            400: "Invalid token",
+            200: openapi.Response(
+                description="Email verified successfully (JSON mode)",
+                schema=openapi.Schema(
+                    type=openapi.TYPE_OBJECT,
+                    properties={
+                        'detail': openapi.Schema(type=openapi.TYPE_STRING),
+                        'email': openapi.Schema(type=openapi.TYPE_STRING),
+                        'verified': openapi.Schema(type=openapi.TYPE_BOOLEAN),
+                    }
+                )
+            ),
+            302: "Redirect to frontend (when redirect=true)",
+            400: "Invalid or missing token",
             404: "User not found",
         }
     )
     def get(self, request):
+        from django.shortcuts import redirect
+        
         token = request.query_params.get("token")
+        
+        # Determine response mode:
+        # - Default to JSON for API/Swagger testing
+        # - Only redirect if ?redirect=true is explicitly set
+        wants_redirect = request.query_params.get('redirect', '').lower() == 'true'
+        
+        frontend_url = getattr(settings, 'FRONTEND_URL', 'http://localhost:8080')
+        
+        # Validate token presence
         if not token:
-            return Response({"detail": "token required"}, status=400)
+            if wants_redirect:
+                return redirect(f"{frontend_url}/auth?error=missing_token")
+            return Response({"detail": "Token required"}, status=400)
 
+        # Verify token
         email = verify_verification_token(token)
         if not email:
+            if wants_redirect:
+                return redirect(f"{frontend_url}/auth?error=invalid_token")
             return Response({"detail": "Invalid or expired token"}, status=400)
 
+        # Verify user exists and update
         try:
             user = User.objects.get(email=email)
             user.email_verified = True
             user.save(update_fields=["email_verified"])
-            return Response({"detail": "Email verified"}, status=200)
+            
+            if wants_redirect:
+                # Redirect for browsers/frontend
+                return redirect(f"{frontend_url}/auth?verified=true&email={user.email}")
+            else:
+                # JSON response (default for Swagger/API clients)
+                return Response({
+                    "detail": "Email verified successfully",
+                    "email": user.email,
+                    "verified": True
+                }, status=200)
 
         except User.DoesNotExist:
+            if wants_redirect:
+                return redirect(f"{frontend_url}/auth?error=user_not_found")
             return Response({"detail": "User not found"}, status=404)
+
+
 
 
 def _rate_limit_key_email(email):
