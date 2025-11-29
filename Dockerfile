@@ -22,13 +22,30 @@ FROM python:3.12-slim-bookworm
 
 WORKDIR /app
 
+# Install supervisor and runtime dependencies
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+        supervisor \
+        libpq5 && \
+    rm -rf /var/lib/apt/lists/* && \
+    mkdir -p /var/log/supervisor
+
 COPY --from=builder /install /usr/local
 COPY . .
 
+# Copy supervisor config and startup script
+COPY supervisord.conf /app/supervisord.conf
+COPY start.sh /app/start.sh
+
+# Make start script executable
+RUN chmod +x /app/start.sh
+
+# Create necessary directories
 RUN mkdir -p /app/staticfiles && chown -R 1000:1000 /app/staticfiles
 RUN useradd -u 1000 -ms /bin/bash appuser
 
-USER appuser
+# Note: Supervisor runs as root to manage processes, but Django and Celery run as appuser
+# USER appuser
 
 EXPOSE 8000
 
@@ -36,4 +53,4 @@ ENV PYTHONUNBUFFERED=1
 ENV DJANGO_SETTINGS_MODULE=remosphere.settings
 ENV STATIC_ROOT=/app/staticfiles
 
-CMD ["/bin/sh", "-c", "python manage.py migrate --noinput && python manage.py collectstatic --noinput && gunicorn remosphere.wsgi:application --bind 0.0.0.0:8000 --workers 2 --threads 2 --log-level info"]
+CMD ["/app/start.sh"]
