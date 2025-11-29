@@ -1,26 +1,162 @@
 [
   {
-    "title": "Senior Backend Engineer",
-    "description": "Work with Django, DRF, and microservices.",
-    "category": "Software Engineering",
-    "location": "Remote",
-    "job_type": "full_time",
-    "salary_range": "$4000 - $6000",
-    "company_name": "TechNova",
-    "company": "TechNova",
-    "created_by_email": "admin@example.com",
-    "is_active": true
+    "model": "jobs.job",
+    "pk": 1,
+    "fields": {
+      "title": "Senior Backend Engineer",
+      "description": "Build and maintain scalable backend services using Django and Python.",
+      "location": "San Francisco, CA",
+      "job_type": "full_time",
+      "salary_range": "$120,000 - $150,000",
+      "is_active": true,
+      "expiry_at": "2025-12-06T00:00:00Z",
+      "category": 1,
+      "company": 1,
+      "created_at": "2025-11-29T00:00:00Z"
+    }
   },
   {
-    "title": "Product Designer",
-    "description": "Create dashboards, prototypes, and UI flows.",
-    "category": "Design",
-    "location": "Lagos",
-    "job_type": "remote",
-    "salary_range": "$2000 - $3500",
-    "company_name": "Designify",
-    "company": "Designify",
-    "created_by_email": null,
-    "is_active": true
+    "model": "jobs.job",
+    "pk": 2,
+    "fields": {
+      "title": "Product Manager",
+      "description": "Lead the roadmap and strategy for our AI-based products.",
+      "location": "Remote",
+      "job_type": "remote",
+      "salary_range": "$90,000 - $120,000",
+      "is_active": true,
+      "expiry_at": "2025-12-06T00:00:00Z",
+      "category": 2,
+      "company": 2,
+      "created_at": "2025-11-29T00:00:00Z"
+    }
+  },
+  {
+    "model": "jobs.job",
+    "pk": 3,
+    "fields": {
+      "title": "UX/UI Designer",
+      "description": "Design user-centric interfaces for web and mobile applications.",
+      "location": "New York, NY",
+      "job_type": "full_time",
+      "salary_range": "$70,000 - $95,000",
+      "is_active": true,
+      "expiry_at": "2025-12-06T00:00:00Z",
+      "category": 3,
+      "company": 3,
+      "created_at": "2025-11-29T00:00:00Z"
+    }
+  },
+  {
+    "model": "jobs.job",
+    "pk": 4,
+    "fields": {
+      "title": "Cloud Infrastructure Engineer",
+      "description": "Manage and optimize cloud environments for enterprise clients.",
+      "location": "Austin, TX",
+      "job_type": "full_time",
+      "salary_range": "$110,000 - $140,000",
+      "is_active": true,
+      "expiry_at": "2025-12-06T00:00:00Z",
+      "category": 1,
+      "company": 4,
+      "created_at": "2025-11-29T00:00:00Z"
+    }
+  },
+  {
+    "model": "jobs.job",
+    "pk": 5,
+    "fields": {
+      "title": "Marketing Specialist",
+      "description": "Develop and execute marketing campaigns for our digital products.",
+      "location": "Los Angeles, CA",
+      "job_type": "full_time",
+      "salary_range": "$50,000 - $70,000",
+      "is_active": true,
+      "expiry_at": "2025-12-06T00:00:00Z",
+      "category": 4,
+      "company": 5,
+      "created_at": "2025-11-29T00:00:00Z"
+    }
+  },
+  {
+    "model": "jobs.job",
+    "pk": 6,
+    "fields": {
+      "title": "Data Analyst",
+      "description": "Analyze data and generate actionable insights for business decisions.",
+      "location": "Chicago, IL",
+      "job_type": "full_time",
+      "salary_range": "$65,000 - $85,000",
+      "is_active": true,
+      "expiry_at": "2025-12-06T00:00:00Z",
+      "category": 6,
+      "company": 6,
+      "created_at": "2025-11-29T00:00:00Z"
+    }
+  },
+  {
+    "model": "jobs.job",
+    "pk": 7,
+    "fields": {
+      "title": "IT Security Specialist",
+      "description": "Protect infrastructure and monitor security for company assets.",
+      "location": "Remote",
+      "job_type": "remote",
+      "salary_range": "$80,000 - $110,000",
+      "is_active": true,
+      "expiry_at": "2025-12-06T00:00:00Z",
+      "category": 8,
+      "company": 7,
+      "created_at": "2025-11-29T00:00:00Z"
+    }
+  },
+  {
+    "model": "jobs.job",
+    "pk": 8,
+    "fields": {
+      "title": "Content Writer",
+      "description": "Create engaging content for web, blogs, and social media campaigns.",
+      "location": "Remote",
+      "job_type": "contract",
+      "salary_range": "$40/hr - $60/hr",
+      "is_active": true,
+      "expiry_at": "2025-12-06T00:00:00Z",
+      "category": 13,
+      "company": 8,
+      "created_at": "2025-11-29T00:00:00Z"
+    }
+  },
+  {
+    "model": "jobs.job",
+    "pk": 9,
+    "fields": {
+      "title": "Financial Analyst",
+      "description": "Provide financial insights and forecasts to guide company strategy.",
+      "location": "New York, NY",
+      "job_type": "full_time",
+      "salary_range": "$70,000 - $95,000",
+      "is_active": true,
+      "expiry_at": "2025-12-06T00:00:00Z",
+      "category": 10,
+      "company": 9,
+      "created_at": "2025-11-29T00:00:00Z"
+    }
+  },
+  {
+    "model": "jobs.job",
+    "pk": 10,
+    "fields": {
+      "title": "Operations Manager",
+      "description": "Oversee daily operations and optimize workflows across departments.",
+      "location": "San Francisco, CA",
+      "job_type": "full_time",
+      "salary_range": "$90,000 - $120,000",
+      "is_active": true,
+      "expiry_at": "2025-12-06T00:00:00Z",
+      "category": 5,
+      "company": 10,
+      "created_at": "2025-11-29T00:00:00Z"
+    }
   }
 ]

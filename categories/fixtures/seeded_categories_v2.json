@@ -1,0 +1,58 @@
+[
+  {
+    "model": "categories.category",
+    "pk": 9,
+    "fields": {
+      "name": "Human Resources",
+      "description": "Manages recruitment, employee relations, and organizational culture."
+    }
+  },
+  {
+    "model": "categories.category",
+    "pk": 10,
+    "fields": {
+      "name": "Finance",
+      "description": "Oversees budgeting, financial planning, and company expenditures."
+    }
+  },
+  {
+    "model": "categories.category",
+    "pk": 11,
+    "fields": {
+      "name": "Sales",
+      "description": "Generates revenue by engaging customers and closing deals."
+    }
+  },
+  {
+    "model": "categories.category",
+    "pk": 12,
+    "fields": {
+      "name": "Legal & Compliance",
+      "description": "Ensures legal adherence, manages contracts, and mitigates risks."
+    }
+  },
+  {
+    "model": "categories.category",
+    "pk": 13,
+    "fields": {
+      "name": "Content & Media",
+      "description": "Creates and manages written, visual, and multimedia content."
+    }
+  },
+  {
+    "model": "categories.category",
+    "pk": 14,
+    "fields": {
+      "name": "Business Development",
+      "description": "Builds strategic partnerships and explores growth opportunities."
+    }
+  },
+  {
+    "model": "categories.category",
+    "pk": 15,
+    "fields": {
+      "name": "Research & Innovation",
+      "description": "Explores new ideas and technologies to drive future advancements."
+    }
+  }
+]
