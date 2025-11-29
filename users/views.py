@@ -21,7 +21,6 @@ class RegisterView(generics.CreateAPIView):
 
     @swagger_auto_schema(
         operation_summary="Register a new user",
-        request_body=RegisterSerializer,
         responses={201: "User created"}
     )
     def post(self, request, *args, **kwargs):
@@ -30,8 +29,20 @@ class RegisterView(generics.CreateAPIView):
         serializer.is_valid(raise_exception=True)
         user = serializer.save()  # <-- user is now created
 
-        # Use request to dynamically build the domain
-        domain = request.build_absolute_uri("/").rstrip("/")
+        # Determine the domain for email verification link
+        # If request came from frontend (has Origin header), use that
+        # Otherwise use backend URL (for Swagger/API testing)
+        origin = request.META.get('HTTP_ORIGIN', '').rstrip('/')
+        frontend_url = getattr(settings, 'FRONTEND_URL', 'http://localhost:8080')
+        
+        if origin and origin == frontend_url:
+            # Request from frontend app - use frontend URL
+            domain = origin
+        else:
+            # Request from Swagger/API/direct - use backend URL
+            scheme = 'https' if request.is_secure() else 'http'
+            host = request.get_host()
+            domain = f"{scheme}://{host}"
 
         # Queue the verification email using Celery
         send_verification_email.delay(user.id, domain)
@@ -77,7 +88,22 @@ class RequestVerificationEmailView(APIView):
                 status=400
             )
 
-        send_verification_email(user)
+        # Determine domain based on request origin
+        origin = request.META.get('HTTP_ORIGIN', '').rstrip('/')
+        frontend_url = getattr(settings, 'FRONTEND_URL', 'http://localhost:8080')
+        
+        if origin and origin == frontend_url:
+            # Request from frontend - use frontend URL
+            domain = origin
+        else:
+            # Request from Swagger/API - use backend URL
+            scheme = 'https' if request.is_secure() else 'http'
+            host = request.get_host()
+            domain = f"{scheme}://{host}"
+        
+        # Send verification email with correct parameters
+        send_verification_email.delay(user.id, domain)
+        
         return Response({"detail": "Verification email sent"})
 
 

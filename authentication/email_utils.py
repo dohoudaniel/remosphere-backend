@@ -32,23 +32,48 @@ def verify_verification_token(token, max_age=60 * 60 * 24):  # 1 day
 
 
 @shared_task  # (bind=True, max_retries=5)
-def send_verification_email(user_id, domain):  # (user_id, request=None):
+def send_verification_email(user_id, domain):
+    """
+    Send verification email to user.
+    
+    Args:
+        user_id: ID of the user to send email to
+        domain: The domain to use for the verification link
+                (e.g., http://localhost:8000 from Swagger, 
+                 or http://localhost:8080 from frontend)
+    """
     try:
         user = User.objects.get(id=user_id)
     except User.DoesNotExist:
         return f"User does not exist."
 
-    # user = User.objects.get(id=user_id)
     token = make_verification_token(user.email)
-    verify_path = reverse("email_verify")  # map to the view name below
-    # build absolute url (if request provided)
-    # domain = request.build_absolute_uri(verify_path) if request else settings.SITE_URL + verify_path
-    # domain = settings.SITE_URL.rstrip("/")  # ensure no trailing slash
-    # ensure token appended
+    
+    # Determine the correct path based on the domain
+    # If domain is frontend URL, use frontend route
+    # If domain is backend URL, use backend API route
+    frontend_url = getattr(settings, 'FRONTEND_URL', 'http://localhost:8080')
+    
+    if domain.startswith(frontend_url):
+        # Frontend URL - use frontend route
+        verify_path = '/auth/verify'
+    else:
+        # Backend URL - use backend API route
+        verify_path = reverse("email_verify")
+    
+    # Build verification URL
     verify_url = f"{domain.rstrip('/')}{verify_path}?token={token}"
+    
     subject = "RemoSphere 🌍: Verify your email to continue"
-    message = f"Hi {user.first_name},\nWelcome to RemoSphere 🌍, the best job board out there :)\n\nClick the link below to verify your email, and start using RemoSphere:\n\n{
-        verify_url}\n\nIf you didn't create an account, ignore this."
+    message = f"""Hi {user.first_name},
+Welcome to RemoSphere 🌍, the best job board out there :)
+
+Click the link below to verify your email, and start using RemoSphere:
+
+{verify_url}
+
+If you didn't create an account, ignore this."""
+    
     send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [user.email])
 
 
