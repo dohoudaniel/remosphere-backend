@@ -2,7 +2,7 @@ amqp==5.3.1
 asgiref==3.10.0
 attrs==25.4.0
 billiard==4.2.3
-celery==5.5.3
+celery
 certifi==2025.11.12
 charset-normalizer==3.4.4
 click==8.3.1

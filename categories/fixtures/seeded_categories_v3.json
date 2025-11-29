@@ -1,0 +1,42 @@
+[
+  {
+    "model": "categories.category",
+    "pk": 16,
+    "fields": {
+      "name": "Quality Assurance",
+      "description": "Ensures products meet reliability, performance, and quality standards."
+    }
+  },
+  {
+    "model": "categories.category",
+    "pk": 17,
+    "fields": {
+      "name": "Supply Chain & Logistics",
+      "description": "Manages product sourcing, warehousing, and delivery operations."
+    }
+  },
+  {
+    "model": "categories.category",
+    "pk": 18,
+    "fields": {
+      "name": "Community & Partnerships",
+      "description": "Builds community engagement and maintains external collaborations."
+    }
+  },
+  {
+    "model": "categories.category",
+    "pk": 19,
+    "fields": {
+      "name": "Training & Development",
+      "description": "Focuses on employee upskilling, learning programs, and career growth."
+    }
+  },
+  {
+    "model": "categories.category",
+    "pk": 20,
+    "fields": {
+      "name": "Environmental & Sustainability",
+      "description": "Drives eco-friendly initiatives and corporate sustainability efforts."
+    }
+  }
+]
