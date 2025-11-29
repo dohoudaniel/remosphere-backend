@@ -1,27 +1,102 @@
 [
-    {
-        "name": "TechNova Solutions",
-        "description": "A global software engineering company building scalable cloud platforms.",
-        "website": "https://www.technova.io"
-    },
-    {
-        "name": "GreenByte Energy",
-        "description": "A clean-tech startup building AI-powered renewable energy optimization tools.",
-        "website": "https://www.greenbyte.energy"
-    },
-    {
-        "name": "Skyline Finance",
-        "description": "A fintech company providing digital banking and investment automation tools.",
-        "website": "https://www.skylinefinance.com"
-    },
-    {
-        "name": "EduCore Learning",
-        "description": "An EdTech company offering modern learning tools for African students.",
-        "website": "https://www.educore.africa"
-    },
-    {
-        "name": "HealthBridge Labs",
-        "description": "Healthcare AI company focusing on early disease detection and digital clinics.",
-        "website": "https://www.healthbridgelabs.com"
+  {
+    "model": "companies.company",
+    "pk": 1,
+    "fields": {
+      "name": "NebulaTech Solutions",
+      "description": "A cloud-native engineering firm building scalable infrastructure and developer tools.",
+      "website": "https://nebulatech.io",
+      "created_at": "2025-11-29T00:00:00Z"
     }
+  },
+  {
+    "model": "companies.company",
+    "pk": 2,
+    "fields": {
+      "name": "Vertex Dynamics",
+      "description": "Innovative solutions in AI and machine learning for businesses.",
+      "website": "https://vertexdynamics.com",
+      "created_at": "2025-11-29T00:00:00Z"
+    }
+  },
+  {
+    "model": "companies.company",
+    "pk": 3,
+    "fields": {
+      "name": "Aether Labs",
+      "description": "A product design studio focused on user-centric software.",
+      "website": "https://aetherlabs.io",
+      "created_at": "2025-11-29T00:00:00Z"
+    }
+  },
+  {
+    "model": "companies.company",
+    "pk": 4,
+    "fields": {
+      "name": "QuantumWorks",
+      "description": "Engineering firm specializing in cloud infrastructure and DevOps solutions.",
+      "website": "https://quantumworks.tech",
+      "created_at": "2025-11-29T00:00:00Z"
+    }
+  },
+  {
+    "model": "companies.company",
+    "pk": 5,
+    "fields": {
+      "name": "Pulse Marketing",
+      "description": "Marketing and advertising agency delivering creative campaigns.",
+      "website": "https://pulsemktg.com",
+      "created_at": "2025-11-29T00:00:00Z"
+    }
+  },
+  {
+    "model": "companies.company",
+    "pk": 6,
+    "fields": {
+      "name": "DataBridge Analytics",
+      "description": "Providing actionable insights through advanced data analytics.",
+      "website": "https://databridge.ai",
+      "created_at": "2025-11-29T00:00:00Z"
+    }
+  },
+  {
+    "model": "companies.company",
+    "pk": 7,
+    "fields": {
+      "name": "SecureNet IT",
+      "description": "IT & cybersecurity solutions for enterprises and SMBs.",
+      "website": "https://securenetit.com",
+      "created_at": "2025-11-29T00:00:00Z"
+    }
+  },
+  {
+    "model": "companies.company",
+    "pk": 8,
+    "fields": {
+      "name": "Creative Hive",
+      "description": "A content and media company delivering engaging stories and campaigns.",
+      "website": "https://creativehive.media",
+      "created_at": "2025-11-29T00:00:00Z"
+    }
+  },
+  {
+    "model": "companies.company",
+    "pk": 9,
+    "fields": {
+      "name": "FinCore Solutions",
+      "description": "Finance and accounting software for modern businesses.",
+      "website": "https://fincore.io",
+      "created_at": "2025-11-29T00:00:00Z"
+    }
+  },
+  {
+    "model": "companies.company",
+    "pk": 10,
+    "fields": {
+      "name": "Global Operations Hub",
+      "description": "Streamlining operations and logistics for international companies.",
+      "website": "https://globalopshub.com",
+      "created_at": "2025-11-29T00:00:00Z"
+    }
+  }
 ]
