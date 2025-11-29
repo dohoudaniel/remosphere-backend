@@ -239,23 +239,23 @@ CELERY_BROKER_URL = env("CELERY_BROKER_URL")
 
 # Celery configuration for SSL/TLS connections (production Redis)
 # This fixes "rediss:// with no ssl options" warning
-import ssl
+# import ssl
 
-CELERY_BROKER_USE_SSL = {
-    'ssl_cert_reqs': ssl.CERT_NONE  # or ssl.CERT_REQUIRED for stricter validation
-}
+# CELERY_BROKER_USE_SSL = {
+#     'ssl_cert_reqs': ssl.CERT_NONE  # or ssl.CERT_REQUIRED for stricter validation
+# }
 
-CELERY_REDIS_BACKEND_USE_SSL = {
-    'ssl_cert_reqs': ssl.CERT_NONE
-}
+# CELERY_REDIS_BACKEND_USE_SSL = {
+#     'ssl_cert_reqs': ssl.CERT_NONE
+# }
 
-# Optional: Set result backend if using Redis for results
-CELERY_RESULT_BACKEND = env("CELERY_RESULT_BACKEND", default=None)
-if CELERY_RESULT_BACKEND and CELERY_RESULT_BACKEND.startswith('rediss://'):
-    CELERY_RESULT_BACKEND_USE_SSL = CELERY_REDIS_BACKEND_USE_SSL
+# # Optional: Set result backend if using Redis for results
+# CELERY_RESULT_BACKEND = env("CELERY_RESULT_BACKEND", default=None)
+# if CELERY_RESULT_BACKEND and CELERY_RESULT_BACKEND.startswith('rediss://'):
+#     CELERY_RESULT_BACKEND_USE_SSL = CELERY_REDIS_BACKEND_USE_SSL
 
-# Worker settings for connection stability
-CELERY_WORKER_CANCEL_LONG_RUNNING_TASKS_ON_CONNECTION_LOSS = False  # Set to True in Celery 6.0
+# # Worker settings for connection stability
+# CELERY_WORKER_CANCEL_LONG_RUNNING_TASKS_ON_CONNECTION_LOSS = True  # Set to True in Celery 6.0
 
 # Password reset token lifetime (minutes)
 PASSWORD_RESET_TOKEN_LIFETIME_MINUTES = env.int(
